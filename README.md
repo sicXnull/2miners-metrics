@@ -1,5 +1,6 @@
 # 2miners-metrics
 
+There is probably better ways to do this, but this worked for me, especially since the info 2Miners provides isn't the best. 
 
 -Consists of the following
 - A Prometheus Exporter for <https://2miners.com/>

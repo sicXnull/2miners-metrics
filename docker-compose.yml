@@ -27,7 +27,7 @@ services:
             - '9977:9977'
         environment:
             - IP-ADDRESS=
-        image: 'sicxnull/jsonexporter:1.0'
+        image: 'sicxnull/jsonexporter:2.0'
     json-apache:
         container_name: jsonpage
         restart: always

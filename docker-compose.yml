@@ -1,0 +1,38 @@
+version: '3.3'
+services:
+    2miners-exporter:
+        container_name: 2miners-exporter
+        restart: always
+        ports:
+            - '9877:9877'
+        environment:
+            - RIG-NAME=
+            - MINING-ADDRESS=
+        image: 'sicxnull/2miners-prometheus:1.0'
+    2miners-convert:
+        container_name: 2miners-convert
+        restart: always
+        volumes:
+            - '/opt/2miners-metrics:/home/sic'
+        environment:
+            - WALLET-ADDY=
+            - FARM-ID=
+            - ELECTRIC-COST=
+            - HIVE-KEY=
+        image: 'sicxnull/2miners-convert:2.0'
+    jsonexporter:
+        container_name: jsonexporter
+        restart: always
+        ports:
+            - '9977:9977'
+        environment:
+            - IP-ADDRESS=
+        image: 'sicxnull/jsonexporter:1.0'
+    json-apache:
+        container_name: jsonpage
+        restart: always
+        ports:
+            - '9878:80'
+        volumes:
+            - '/opt/2miners-metrics:/usr/local/apache2/htdocs'
+        image: 'sicxnull/json-apache:1.0'

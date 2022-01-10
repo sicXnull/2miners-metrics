@@ -31,7 +31,6 @@ IP-ADDRESS=
 
 ## Running the app
 
-Directory
 
 ```sh
 cd /opt

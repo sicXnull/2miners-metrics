@@ -11,7 +11,8 @@ There is probably better ways to do this, but this worked for me, especially sin
 
 Metrics used for Grafana Dash which is also linked 
 
-![image](https://user-images.githubusercontent.com/31908995/148860999-abdef56a-e865-41d5-b390-21c7e8c92ee5.png)
+![image](https://user-images.githubusercontent.com/31908995/148861960-10505a0b-0de8-44ad-92e2-dde09784ea4c.png)
+
 
 
 ## ENV Variables

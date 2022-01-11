@@ -7,7 +7,11 @@ There is probably better ways to do this, but this worked for me, especially sin
 - Price Converter (Eth value to BTC/USD)
 - HiveOS Wattage to USD Conversion
 - Exporter for above conversions
+- Telegraf/InfluxDB HiveOS 
 
+Metrics used for Grafana Dash which is also linked 
+
+![image](https://user-images.githubusercontent.com/31908995/148860999-abdef56a-e865-41d5-b390-21c7e8c92ee5.png)
 
 
 ## ENV Variables

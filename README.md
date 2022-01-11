@@ -1,6 +1,6 @@
 # 2miners-metrics
 
-There is probably better ways to do this, but this worked for me, especially since the info 2Miners provides isn't the best. That said, this setup is still kind of hacked together, please send over pull requests if you use this and modify it in a positive way 
+There are probably better ways to do this, but this worked for me, especially since the info 2Miners provides isn't the best. That said, this setup is still kind of hacked together, please send over pull requests if you use this and modify it in a positive way 
 
 -Consists of the following
 - A Prometheus Exporter for <https://2miners.com/>

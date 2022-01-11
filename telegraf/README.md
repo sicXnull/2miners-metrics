@@ -9,15 +9,15 @@ Forked from - https://github.com/jouir/mining-dashboards/tree/main/telegraf
 On your [account](https://the.hiveos.farm/account) page, go to *Authentication Tokens*, search for *Personal Tokens* and
 create one for `telegraf`:
 
-![hiveos personal tokens](../images/hiveos-001.png)
+![image](https://user-images.githubusercontent.com/31908995/148863307-f542ed77-e9dc-484b-8b77-660f075acf41.png)
 
 Enter your 2FA code if needed:
 
-![hiveos two factor auth](../images/hiveos-002.png)
+![image](https://user-images.githubusercontent.com/31908995/148863321-8f62fb78-e8c0-448d-abb1-1902da723f5c.png)
 
 Click on *Show*:
 
-![hiveos token show](../images/hiveos-003.png)
+![image](https://user-images.githubusercontent.com/31908995/148863337-d922cdc0-b6b1-499a-8d58-c645764913a4.png)
 
 And add this value to the `HIVEOS_TOKEN` environment variable (see *Quickstart* section in the [README](../README.md)).
 

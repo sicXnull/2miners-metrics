@@ -19,7 +19,7 @@ services:
             - FARM-ID=
             - ELECTRIC-COST=
             - HIVE-KEY=
-        image: 'sicxnull/2miners-convert:2.0'
+        image: 'sicxnull/2miners-convert:3.0'
     jsonexporter:
         container_name: jsonexporter
         restart: always

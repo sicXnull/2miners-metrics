@@ -80,4 +80,4 @@ if __name__ == '__main__':
     running = True
     while running:
         execute.extractData()
-        time.sleep(60)
+        time.sleep(300)

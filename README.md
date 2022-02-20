@@ -9,6 +9,10 @@ There are probably better ways to do this, but this worked for me, especially si
 - Exporter for above conversions
 - Telegraf/InfluxDB HiveOS 
 
+-Required:
+- Cryptocompare API Key (Free will be fine)
+- Hive OS API Key
+
 Metrics used for Grafana Dash which is also linked 
 
 ![image](https://user-images.githubusercontent.com/31908995/148861960-10505a0b-0de8-44ad-92e2-dde09784ea4c.png)
@@ -28,6 +32,7 @@ WALLET-ADDY=<BTC/ETH Mining Address>
 FARM-ID=<Hive-OS Farm ID>
 ELECTRIC-COST=<CENTS>
 HIVE-KEY=<HiveOS API Key>
+CC-KEY=<CRYPTOCOMPARE-API-KEY>
 ```
 - Converter-Exporter
 

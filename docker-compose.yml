@@ -36,4 +36,4 @@ services:
             - '9878:80'
         volumes:
             - '/opt/2miners-metrics:/usr/local/apache2/htdocs'
-        image: 'sicxnull/json-apache:1.0'
+        image: 'sicxnull/json-apache:latest'

@@ -8,7 +8,7 @@ services:
         environment:
             - RIG-NAME=
             - MINING-ADDRESS=
-        image: 'sicxnull/2miners-prometheus:1.0'
+        image: 'sicxnull/2miners-prometheus:latest'
     2miners-convert:
         container_name: 2miners-convert
         restart: always
@@ -19,7 +19,8 @@ services:
             - FARM-ID=
             - ELECTRIC-COST=
             - HIVE-KEY=
-        image: 'sicxnull/2miners-convert:3.0'
+            - CC-KEY=
+        image: 'sicxnull/2miners-convert:latest'
     jsonexporter:
         container_name: jsonexporter
         restart: always
@@ -27,7 +28,7 @@ services:
             - '9977:9977'
         environment:
             - IP-ADDRESS=
-        image: 'sicxnull/jsonexporter:2.0'
+        image: 'sicxnull/jsonexporter:latest'
     json-apache:
         container_name: jsonpage
         restart: always

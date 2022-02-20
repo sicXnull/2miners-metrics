@@ -6,6 +6,7 @@ wallet_address = os.environ.get('WALLET-ADDY')
 hive_farm_id = os.environ.get('FARM-ID')
 electric = float(os.environ.get('ELECTRIC-COST'))
 hive_key = os.environ.get('HIVE-KEY')
+cc_key = os.environ.get('CC-KEY')
 
 class PriceStats:
     def __init__(self):
@@ -72,7 +73,7 @@ class PriceStats:
         return kwh * electric / cents
 
     def priceURL(self, coin, currency):
-        return f'https://min-api.cryptocompare.com/data/price?fsym={coin}&tsyms={currency}'
+        return f'https://min-api.cryptocompare.com/data/price?fsym={coin}&tsyms={currency}&api_key={cc_key}'
 
 
 if __name__ == '__main__':
@@ -80,4 +81,4 @@ if __name__ == '__main__':
     running = True
     while running:
         execute.extractData()
-        time.sleep(60)
+        time.sleep(300)

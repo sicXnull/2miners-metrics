@@ -7,6 +7,9 @@ import requests
 import logging
 
 addy = os.environ.get('IP-ADDRESS')
+base_coin = os.environ.get("base_coin")
+mining_coin = os.environ.get("mining_coin")
+currency = os.environ.get("currency")
 
 class AppMetrics:
     """
@@ -15,21 +18,23 @@ class AppMetrics:
     """
 
     def __init__(self, app_port=80, polling_interval_seconds=5):
+
         self.app_port = app_port
         self.polling_interval_seconds = polling_interval_seconds
         # Prometheus metrics to collect
-        self.jsonstats_price_BTC = Gauge("jsonstats_price_BTC", "price_BTC")
-        self.jsonstats_price_ETH = Gauge("jsonstats_price_ETH", "price_ETH")
-        self.jsonstats_unpaid_balance_ETH = Gauge("jsonstats_unpaid_balance_ETH", "unpaid_balance_ETH")
-        self.jsonstats_unpaid_balance_USD = Gauge("jsonstats_unpaid_balance_USD", "unpaid_balance_USD")
-        self.jsonstats_unpaid_last_24_hr_ETH = Gauge("jsonstats_unpaid_last_24_hr_ETH", "unpaid_last_24_hr_ETH")
-        self.jsonstats_unpaid_last_24_hr_USD = Gauge("jsonstats_unpaid_last_24_hr_USD", "unpaid_last_24_hr_USD")
-        self.jsonstats_wallet_balance_BTC = Gauge("jsonstats_wallet_balance_BTC", "wallet_balance_BTC")
-        self.jsonstats_wallet_balance_USD = Gauge("jsonstats_wallet_balance_USD", "wallet_balance_USD")
-        self.jsonstats_power_cost_USD = Gauge("jsonstats_power_cost_USD", "power_cost_USD")
-        self.jsonstats_mining_profitability = Gauge("jsonstats_mining_profitability", "mining_profitability")
-        self.jsonstats_mining_profitability_percent = Gauge("jsonstats_mining_profitability_percent", "mining_profitability_percent")
+        self.metrics = {
+            f"jsonstats_price_{base_coin}": Gauge(f"jsonstats_price_{base_coin}", f"price_{base_coin}"),
+            f"jsonstats_price_{mining_coin}": Gauge(f"jsonstats_price_{mining_coin}", f"price_{mining_coin}"),
+            f"jsonstats_unpaid_balance_{mining_coin}": Gauge(f"jsonstats_unpaid_balance_{mining_coin}", f"unpaid_balance_{mining_coin}"),
+            f"jsonstats_unpaid_balance_{currency}": Gauge(f"jsonstats_unpaid_balance_{currency}", f"unpaid_balance_{currency}"),
+            f"jsonstats_unpaid_last_24_hr_{currency}": Gauge(f"jsonstats_unpaid_last_24_hr_{currency}", f"unpaid_last_24_hr_{currency}"),
+            f"jsonstats_wallet_balance_{base_coin}": Gauge(f"jsonstats_wallet_balance_{base_coin}", f"wallet_balance_{base_coin}"),
+            f"jsonstats_wallet_balance_{mining_coin}": Gauge(f"jsonstats_wallet_balance_{mining_coin}", f"wallet_balance_{mining_coin}"),
+            f"jsonstats_power_cost_{currency}": Gauge(f"jsonstats_power_cost_{currency}", f"power_cost_{currency}"),
+            "jsonstats_mining_profitability": Gauge("jsonstats_mining_profitability", "mining_profitability"),
+            "jsonstats_mining_profitability_percent": Gauge("jsonstats_mining_profitability_percent","mining_profitability_percent")
 
+        }
 
     def run_metrics_loop(self):
         """Metrics fetching loop"""
@@ -49,17 +54,17 @@ class AppMetrics:
         status_data = resp.json()
 
         # Update Prometheus metrics with application metrics
-        self.jsonstats_price_BTC.set(status_data["price_BTC"])
-        self.jsonstats_price_ETH.set(status_data["price_ETH"])
-        self.jsonstats_unpaid_balance_ETH.set(status_data["unpaid_balance_ETH"])
-        self.jsonstats_unpaid_balance_USD.set(status_data["unpaid_balance_USD"])
-        self.jsonstats_unpaid_last_24_hr_ETH.set(status_data["unpaid_last_24_hr_ETH"])
-        self.jsonstats_unpaid_last_24_hr_USD.set(status_data["unpaid_last_24_hr_USD"])
-        self.jsonstats_wallet_balance_BTC.set(status_data["wallet_balance_BTC"])
-        self.jsonstats_wallet_balance_USD.set(status_data["wallet_balance_USD"])
-        self.jsonstats_power_cost_USD.set(status_data["power_cost_USD"])
-        self.jsonstats_mining_profitability.set(status_data["mining_profitability"])
-        self.jsonstats_mining_profitability_percent.set(status_data["mining_profitability_percent"])
+        self.metrics[f"jsonstats_price_{base_coin}"].set(status_data[f"price_{base_coin}"])
+        self.metrics[f"jsonstats_price_{mining_coin}"].set(status_data[f"price_{mining_coin}"])
+        self.metrics[f"jsonstats_unpaid_balance_{mining_coin}"].set(status_data[f"unpaid_balance_{mining_coin}"])
+        self.metrics[f"jsonstats_unpaid_balance_{currency}"].set(status_data[f"unpaid_balance_{currency}"])
+        self.metrics[f"jsonstats_unpaid_last_24_hr_{mining_coin}"].set(status_data[f"unpaid_last_24_hr_{mining_coin}"])
+        self.metrics[f"jsonstats_unpaid_last_24_hr_{currency}"].set(status_data[f"unpaid_last_24_hr_{currency}"])
+        self.metrics[f"jsonstats_wallet_balance_{base_coin}"].set(status_data[f"wallet_balance_{mining_coin}"])
+        self.metrics[f"jsonstats_wallet_balance_{currency}"].set(status_data[f"wallet_balance_{currency}"])
+        self.metrics[f"jsonstats_power_cost_{currency}"].set(status_data[f"power_cost_{currency}"])
+        self.metrics[f"jsonstats_mining_profitability"].set(status_data["mining_profitability"])
+        self.metrics[f"jsonstats_mining_profitability_percent"].set(status_data["mining_profitability_percent"])
 
 
 def main():

@@ -7,19 +7,25 @@ hive_farm_id = os.environ.get('FARM-ID')
 electric = float(os.environ.get('ELECTRIC-COST'))
 hive_key = os.environ.get('HIVE-KEY')
 cc_key = os.environ.get('CC-KEY')
+mining_url = os.environ.get('MINING_URL')
+explorer_url = os.environ.get('EXPLORER_URL')
+hive_url = os.environ.get('HIVE_URL')
+currency = os.environ.get('currency')
+ticker = os.environ.get('mining_coin')
+wallet_type = os.environ.get('base_coin')
 
 class PriceStats:
     def __init__(self):
-        self.currency = 'USD'
-        self.ticker = 'ETH'
-        self.wallet_type = 'BTC'
+        self.currency = currency
+        self.ticker = ticker
+        self.wallet_type = wallet_type
         self.hive_headers = {"Authorization": f"Bearer {hive_key}"}
 
         self.endpoints = {
             'price': f'',
-            '2miners': f'https://eth.2miners.com/api/accounts/{wallet_address}',
-            'balance': f'https://blockchain.info/balance?active={wallet_address}',
-            'hive': f'https://api2.hiveos.farm/api/v2/farms/{hive_farm_id}/stats'
+            '2miners': f'{mining_url}/{wallet_address}',
+            'balance': f'{explorer_url}{wallet_address}',
+            'hive': f'{hive_url}/api/v2/farms/{hive_farm_id}/stats'
         }
         self.results = {}
 

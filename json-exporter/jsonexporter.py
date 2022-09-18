@@ -7,9 +7,9 @@ import requests
 import logging
 
 addy = os.environ.get('IP-ADDRESS')
-base_coin = os.environ.get("base_coin")
-mining_coin = os.environ.get("mining_coin")
-currency = os.environ.get("currency")
+base_coin = os.environ.get("BASE_COIN")
+mining_coin = os.environ.get("MINING_COIN")
+currency = os.environ.get("CURRENCY")
 
 class AppMetrics:
     """

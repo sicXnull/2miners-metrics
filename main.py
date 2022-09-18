@@ -10,9 +10,9 @@ cc_key = os.environ.get('CC-KEY')
 mining_url = os.environ.get('MINING_URL')
 explorer_url = os.environ.get('EXPLORER_URL')
 hive_url = os.environ.get('HIVE_URL')
-currency = os.environ.get('currency')
-ticker = os.environ.get('mining_coin')
-wallet_type = os.environ.get('base_coin')
+currency = os.environ.get('CURRENCY')
+ticker = os.environ.get('MINING_COIN')
+wallet_type = os.environ.get('BASE_COIN')
 
 class PriceStats:
     def __init__(self):

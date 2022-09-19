@@ -15,7 +15,7 @@ class PriceStats:
         self.ticker = 'ETH'
         self.wallet_type = 'BTC'
         self.hive_headers = {"Authorization": f"Bearer {hive_key}"}
-        self.decimal = f'1{"0"*decimal}'
+        self.decimal = int(f'1{"0"*decimal}')
 
         self.endpoints = {
             'price': f'',

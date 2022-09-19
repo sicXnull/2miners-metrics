@@ -30,7 +30,7 @@ docker build -t 2miners-metrics:latest .
 - Run it while listening on port 9877:
 
 ```sh
-docker run -d -p 9877:9877 -p 9977:9977 -p 8800:80 --name 2miners-exporter --restart=always 2miners-metrics:latest
+docker run -d -p 9877:9877 -p 9977:9977 -p 8800:80 --name 2miners-metrics --restart=always 2miners-metrics:latest
 ```
 ```
 

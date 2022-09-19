@@ -8,6 +8,7 @@ import logging
 
 addy = os.environ.get('MINING-ADDRESS')
 name = os.environ.get('RIG-NAME')
+coin = os.environ.get('COIN')
 
 class AppMetrics:
     """
@@ -45,7 +46,7 @@ class AppMetrics:
         """
 
         # Fetch raw status data from the application
-        resp = requests.get(url=f"https://eth.2miners.com/api/accounts/{addy}")
+        resp = requests.get(url=f"https://{coin}.2miners.com/api/accounts/{addy}")
         status_data = resp.json()
 
         # Update Prometheus metrics with application metrics
@@ -76,3 +77,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    

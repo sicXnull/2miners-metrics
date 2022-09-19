@@ -27,7 +27,7 @@ Metrics used for Grafana Dash which is also linked
 docker build -t 2miners-metrics:latest .
 ```
 
-- Run it while listening on port 9877:
+- Run it while listening on port 9877,9977, 80 (80 is optional, if you wish to see price converter json):
 
 ```sh
 docker run -d -p 9877:9877 -p 9977:9977 -p 8800:80 --name 2miners-metrics --restart=always 2miners-metrics:latest
@@ -36,4 +36,4 @@ docker run -d -p 9877:9877 -p 9977:9977 -p 8800:80 --name 2miners-metrics --rest
 
 - 2Miners Exporter Port - 9877
 - Conversion Exporter Port - 9977
-- Json Host - 9878
+- Json Host - 80

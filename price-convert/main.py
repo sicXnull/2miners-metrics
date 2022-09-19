@@ -7,6 +7,7 @@ hive_farm_id = os.environ.get('FARM-ID')
 electric = float(os.environ.get('ELECTRIC-COST'))
 hive_key = os.environ.get('HIVE-KEY')
 cc_key = os.environ.get('CC-KEY')
+decimal = os.environ.get('MINING_DECIMALS')
 
 class PriceStats:
     def __init__(self):
@@ -14,6 +15,7 @@ class PriceStats:
         self.ticker = 'ETH'
         self.wallet_type = 'BTC'
         self.hive_headers = {"Authorization": f"Bearer {hive_key}"}
+        self.decimal = int(f'1{"0"*decimal}')
 
         self.endpoints = {
             'price': f'',
@@ -35,14 +37,14 @@ class PriceStats:
 
             elif key == "2miners":
                 resp = requests.get(self.endpoints[key]).json()
-                self.results.update({f"unpaid_balance_{self.ticker}": round(resp['stats']['balance'] / 1000000000 if self.ticker == "ETH" else 100000000, 5)})
+                self.results.update({f"unpaid_balance_{self.ticker}": round(resp['stats']['balance'] / self.decimal, 5)})
                 self.results.update({f"unpaid_balance_{self.currency}": round(self.results[f"unpaid_balance_{self.ticker}"] * self.results[f"price_{self.ticker}"], 2)})
-                self.results.update({f"unpaid_last_24_hr_{self.ticker}": round(resp['sumrewards'][2]['reward'] / 1000000000 if self.ticker == "ETH" else 100000000, 5)})
+                self.results.update({f"unpaid_last_24_hr_{self.ticker}": round(resp['sumrewards'][2]['reward'] / self.decimal, 5)})
                 self.results.update({f"unpaid_last_24_hr_{self.currency}": round(self.results[f"unpaid_last_24_hr_{self.ticker}"] * self.results[f"price_{self.ticker}"], 2)})
 
             elif key == "balance":
                 resp = requests.get(self.endpoints[key]).json()
-                self.results.update({f'wallet_{key}_{self.wallet_type}': round(resp[wallet_address]['final_balance'] / 100000000, 5)})
+                self.results.update({f'wallet_{key}_{self.wallet_type}': round(resp[wallet_address]['final_balance'] / self.decimal, 5)})
                 self.results.update({f'wallet_{key}_{self.currency}': round(self.results[f'wallet_{key}_{self.wallet_type}'] * self.results[f'price_{self.wallet_type}'], 2)})
 
             elif key == "hive":

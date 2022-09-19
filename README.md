@@ -19,37 +19,19 @@ Metrics used for Grafana Dash which is also linked
 
 
 
-## ENV Variables
-- 2miners-exporter
+# Developing
+
+- Build the image:
 
 ```sh
-RIG-NAME= <2Miners Rig Name>
-MINING-ADDRESS= <BTC/ETH Mining Address>
-```
-- Price/Power Converter
-```sh
-WALLET-ADDY=<BTC/ETH Mining Address>
-FARM-ID=<Hive-OS Farm ID>
-ELECTRIC-COST=<CENTS>
-HIVE-KEY=<HiveOS API Key>
-CC-KEY=<CRYPTOCOMPARE-API-KEY>
-```
-- Converter-Exporter
-
-```sh
-IP-ADDRESS=
+docker build -t 2miners-metrics:latest .
 ```
 
-## Running the app
-
+- Run it while listening on port 9877:
 
 ```sh
-cd /opt
-git clone https://github.com/sicXnull/2miners-metrics.git
+docker run -d -p 9877:9877 -p 9977:9977 -p 8800:80 --name 2miners-exporter --restart=always 2miners-metrics:latest
 ```
-
-```sh
-docker-compose up -d
 ```
 
 - 2Miners Exporter Port - 9877

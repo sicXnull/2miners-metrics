@@ -8,7 +8,7 @@ import logging
 
 addy = os.environ.get('MINING-ADDRESS')
 name = os.environ.get('RIG-NAME')
-coin = os.environ.get('COIN')
+coin = os.environ.get('MINING_COIN')
 
 class AppMetrics:
     """

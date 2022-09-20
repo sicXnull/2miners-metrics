@@ -1,4 +1,4 @@
 #!/bin/python3
-2miners.py &
-main.py &
-jsonexporter.py &
+/assets/2miners.py &
+/assets/main.py &
+/assets/jsonexporter.py &

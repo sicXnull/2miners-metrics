@@ -4,7 +4,7 @@ import os
 import time
 from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
 import requests
-import logging
+from logger import logger
 
 addy = os.environ.get('IP-ADDRESS')
 base_coin = os.environ.get("BASE_COIN")
@@ -18,7 +18,7 @@ class AppMetrics:
     """
 
     def __init__(self, app_port=80, polling_interval_seconds=5):
-
+        logger.info(f"Init jsonexporter.py AppMetrics")
         self.app_port = app_port
         self.polling_interval_seconds = polling_interval_seconds
         # Prometheus metrics to collect
@@ -39,7 +39,7 @@ class AppMetrics:
 
     def run_metrics_loop(self):
         """Metrics fetching loop"""
-
+        logger.info(f"Starting jsonexporter running loop")
         while True:
             self.fetch()
             time.sleep(self.polling_interval_seconds)
@@ -49,10 +49,11 @@ class AppMetrics:
         Get metrics from application and refresh Prometheus metrics with
         new values.
         """
-
+        logger.info(f"Fetching metrics")
         # Fetch raw status data from the application
         resp = requests.get(url=f"http://{addy}/result.json")
         status_data = resp.json()
+        logger.info(f"status_date : {status_data}")
 
         # Update Prometheus metrics with application metrics
         self.metrics[f"jsonstats_price_{base_coin}"].set(status_data[f"price_{base_coin}"])

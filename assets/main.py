@@ -1,6 +1,9 @@
 import json, requests
 import time
 import os
+from logger import logger
+
+
 
 wallet_address = os.environ.get('WALLET-ADDY')
 hive_farm_id = os.environ.get('FARM-ID')
@@ -17,6 +20,7 @@ decimal = os.environ.get('MINING_DECIMALS')
 
 class PriceStats:
     def __init__(self):
+        logger.info(f"Init PriceStates")
         self.currency = currency
         self.ticker = ticker
         self.wallet_type = wallet_type
@@ -29,10 +33,11 @@ class PriceStats:
             'balance': f'{explorer_url}{wallet_address}',
             'hive': f'{hive_url}/api/v2/farms/{hive_farm_id}/stats'
         }
+        logger.info(f"Endpoints : ")
         self.results = {}
 
     def extractData(self):
-
+        logger.info(f"Extracting Data")
         for key in self.endpoints.keys():
 
             if key == "price":
@@ -59,13 +64,15 @@ class PriceStats:
                 self.results[f'power_cost_{self.currency}'] = round(self.powerConversion(watts), 2)
                 self.results['mining_profitability'] = round(self.results[f'unpaid_last_24_hr_{self.currency}'] - self.results[f'power_cost_{self.currency}'], 2)
                 self.results['mining_profitability_percent'] = round((self.results['mining_profitability'] / self.results[f'unpaid_last_24_hr_{self.currency}']) * 100, 2)
-
+        logger.info(f"Data Extraction Complete")
+        logger.info(f"Writing Data")
         with open('metrics.txt', 'w') as file:
             file.write(self.metrics_data)
 
         with open("result.json", 'w') as file:
             json.dump(self.results, file, indent=2)
-        print(self.results)
+        logger.info("Data Write Complete")
+        logger.info(f"Results : {self.results})
 
     @property
     def metrics_data(self):
@@ -89,4 +96,6 @@ if __name__ == '__main__':
     running = True
     while running:
         execute.extractData()
-        time.sleep(300)
+        sleep_time = 300
+        logger.info(f"PriceStats() Sleeping for {sleep_time}")
+        time.sleep(sleep_time)

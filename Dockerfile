@@ -42,6 +42,6 @@ WORKDIR /assets
 RUN pip3 install -r requirements.txt
 
 RUN chmod +x *.py
-RUN chmod +x *sh
+RUN chmod +x *.sh
 
 ENTRYPOINT ["sh", "/assets/run.sh"]

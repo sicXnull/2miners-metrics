@@ -29,8 +29,10 @@ RUN apt-get update -q \
     && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
       apache2 \
       python3-pip \
-      openssh-server \
     && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /assets
+RUN mkdir /logs
 
 # Copy assets
 COPY assets/ /assets/
@@ -40,5 +42,6 @@ WORKDIR /assets
 RUN pip3 install -r requirements.txt
 
 RUN chmod +x *.py
+RUN chmod +x *sh
 
-RUN sh run.sh
+ENTRYPOINT ["sh", "/assets/run.sh"]

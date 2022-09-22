@@ -4,10 +4,10 @@ import os
 import time
 from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
 import requests
-import logging
+from logger import logger
 
-addy = os.environ.get('MINING-ADDRESS')
-name = os.environ.get('RIG-NAME')
+addy = os.environ.get('MINING_ADDRESS')
+name = os.environ.get('RIG_NAME')
 coin = os.environ.get('MINING_COIN')
 
 class AppMetrics:
@@ -17,6 +17,7 @@ class AppMetrics:
     """
 
     def __init__(self, app_port=80, polling_interval_seconds=5):
+        logger.info("Init 2miners.py AppMetrics")
         self.app_port = app_port
         self.polling_interval_seconds = polling_interval_seconds
         # Prometheus metrics to collect
@@ -34,9 +35,10 @@ class AppMetrics:
 
     def run_metrics_loop(self):
         """Metrics fetching loop"""
-
+        logger.info(f"Beginning Running Loop")
         while True:
             self.fetch()
+            logger.info(f"Sleeping for  : {self.polling_interval_seconds}(s)")
             time.sleep(self.polling_interval_seconds)
 
     def fetch(self):
@@ -44,11 +46,12 @@ class AppMetrics:
         Get metrics from application and refresh Prometheus metrics with
         new values.
         """
-
+        logger.info(f"Fetching Data")
         # Fetch raw status data from the application
         resp = requests.get(url=f"https://{coin}.2miners.com/api/accounts/{addy}")
         status_data = resp.json()
-
+        logger.info(f"status  : {status_data}")
+        logger.info(f"Update Prometheus Metrics")
         # Update Prometheus metrics with application metrics
         self.miner_dayreward_number.set(status_data["24hnumreward"])
         self.miner_dayreward.set(status_data["24hreward"])

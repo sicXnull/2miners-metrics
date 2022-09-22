@@ -28,7 +28,7 @@ class PriceStats:
         self.endpoints = {
             'price': f'',
             '2miners': f'{mining_url}/{wallet_address}',
-            'balance': f'{explorer_url}/{wallet_address}',
+            'balance': f'{explorer_url}{wallet_address}',
             'hive': f'{hive_url}/api/v2/farms/{hive_farm_id}/stats'
         }
         logger.info(f"Endpoints : ")

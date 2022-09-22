@@ -43,7 +43,7 @@ MINING_COIN=
 MINING_DECIMALS=
 ```
 
-- Run it while listening on port 9877,9977, 8800 (8800 is optional, if you wish to see price converter json):
+- Run it while listening on port 9877,9977,8800 (8800 is optional, if you wish to see price converter json):
 
 ```sh
 docker run -d --env-file ./.env -p 9877:9877 -p 9977:9977 -p 8800:80 -v /opt/2miners-metrics/assets:/assets -v /opt/2miners-metrics/logs:/logs --name 2miners-metrics --restart=always 2miners-metrics:latest
@@ -52,4 +52,4 @@ docker run -d --env-file ./.env -p 9877:9877 -p 9977:9977 -p 8800:80 -v /opt/2mi
 
 - 2Miners Exporter Port - 9877
 - Conversion Exporter Port - 9977
-- Json Host - 80
+- Json Host - 8800

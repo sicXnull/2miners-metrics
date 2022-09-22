@@ -3,8 +3,6 @@ import time
 import os
 from logger import logger
 
-
-
 wallet_address = os.environ.get('WALLET_ADDY')
 hive_farm_id = os.environ.get('FARM_ID')
 electric = float(os.environ.get('ELECTRIC_COST'))

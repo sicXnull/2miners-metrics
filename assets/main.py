@@ -67,10 +67,10 @@ class PriceStats:
         with open('metrics.txt', 'w') as file:
             file.write(self.metrics_data)
 
-        with open("result.json", 'w') as file:
+        with open("/var/www/html/result.json", 'w') as file:
             json.dump(self.results, file, indent=2)
         logger.info("Data Write Complete")
-        logger.info(f"Results : {self.results})
+        logger.info(f"Results : {self.results}")
 
     @property
     def metrics_data(self):

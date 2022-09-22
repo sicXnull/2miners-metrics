@@ -17,7 +17,7 @@ class AppMetrics:
     application metrics into Prometheus metrics.
     """
 
-    def __init__(self, app_port=80, polling_interval_seconds=5):
+    def __init__(self, app_port=80, polling_interval_seconds=60):
         logger.info(f"Init jsonexporter.py AppMetrics")
         self.app_port = app_port
         self.polling_interval_seconds = polling_interval_seconds

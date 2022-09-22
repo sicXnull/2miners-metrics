@@ -6,7 +6,7 @@ from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
 import requests
 from logger import logger
 
-addy = os.environ.get('IP-ADDRESS')
+addy = os.environ.get('IP_ADDRESS')
 base_coin = os.environ.get("BASE_COIN")
 mining_coin = os.environ.get("MINING_COIN")
 currency = os.environ.get("CURRENCY")

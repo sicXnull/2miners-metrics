@@ -1,13 +1,11 @@
 # 2miners-metrics
 
-There are probably better ways to do this, but this worked for me, especially since the info 2Miners provides isn't the best. That said, this setup is still kind of hacked together, please send over pull requests if you use this and modify it in a positive way 
 
 -Consists of the following
 - A Prometheus Exporter for <https://2miners.com/>
 - Price Converter (Eth value to BTC/USD)
 - HiveOS Wattage to USD Conversion
 - Exporter for above conversions
-- Telegraf/InfluxDB HiveOS 
 
 -Required:
 - Cryptocompare API Key (Free will be fine)
@@ -18,7 +16,6 @@ Metrics used for Grafana Dash which is also linked
 ![image](https://user-images.githubusercontent.com/31908995/148861960-10505a0b-0de8-44ad-92e2-dde09784ea4c.png)
 
 
-
 # Developing
 
 - Build the image:
@@ -26,11 +23,30 @@ Metrics used for Grafana Dash which is also linked
 ```sh
 docker build -t 2miners-metrics:latest .
 ```
+- Rename .env-example to .env, enter ENV variables:
 
-- Run it while listening on port 9877,9977, 80 (80 is optional, if you wish to see price converter json):
+```
+MINING_ADDRESS=<2miners Mining Address>
+RIG_NAME=<2miners Mining Name>
+IP_ADDRESS=<Machine IP>
+WALLET_ADDY=<For Blockchain.info>
+FARM_ID=<HiveOS Farm id>
+ELECTRIC_COST=<cents 12=0.12>
+HIVE_KEY=<HiveOS API Key>
+CC_KEY=<CryptoCompare API key>
+EXPLORER_URL=https://blockchain.info/balance?active=
+HIVE_URL=https://api2.hiveos.farm
+MINING_URL=https://<coin>.2miners.com/api/accounts
+CURRENCY=USD
+BASE_COIN=BTC
+MINING_COIN=
+MINING_DECIMALS=
+```
+
+- Run it while listening on port 9877,9977, 8800 (8800 is optional, if you wish to see price converter json):
 
 ```sh
-docker run -d -p 9877:9877 -p 9977:9977 -p 8800:80 --name 2miners-metrics --restart=always 2miners-metrics:latest
+docker run -d --env-file ./.env -p 9877:9877 -p 9977:9977 -p 8800:80 -v /opt/2miners-metrics/assets:/assets -v /opt/2miners-metrics/logs:/logs --name 2miners-metrics --restart=always 2miners-metrics:latest
 ```
 ```
 

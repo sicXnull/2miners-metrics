@@ -3,20 +3,18 @@ import time
 import os
 from logger import logger
 
-
-
-wallet_address = os.environ.get('WALLET-ADDY')
-hive_farm_id = os.environ.get('FARM-ID')
-electric = float(os.environ.get('ELECTRIC-COST'))
-hive_key = os.environ.get('HIVE-KEY')
-cc_key = os.environ.get('CC-KEY')
+wallet_address = os.environ.get('WALLET_ADDY')
+hive_farm_id = os.environ.get('FARM_ID')
+electric = float(os.environ.get('ELECTRIC_COST'))
+hive_key = os.environ.get('HIVE_KEY')
+cc_key = os.environ.get('CC_KEY')
 explorer_url = os.environ.get('EXPLORER_URL')
 mining_url = os.environ.get('MINING_URL')
 hive_url = os.environ.get('HIVE_URL')
 currency = os.environ.get('CURRENCY')
 ticker = os.environ.get('MINING_COIN')
 wallet_type = os.environ.get('BASE_COIN')
-decimal = os.environ.get('MINING_DECIMALS')
+decimal = int(os.environ.get('MINING_DECIMALS'))
 
 class PriceStats:
     def __init__(self):

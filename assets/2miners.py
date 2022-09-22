@@ -6,8 +6,8 @@ from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
 import requests
 from logger import logger
 
-addy = os.environ.get('MINING-ADDRESS')
-name = os.environ.get('RIG-NAME')
+addy = os.environ.get('MINING_ADDRESS')
+name = os.environ.get('RIG_NAME')
 coin = os.environ.get('MINING_COIN')
 
 class AppMetrics:

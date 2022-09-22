@@ -14,7 +14,7 @@ hive_url = os.environ.get('HIVE_URL')
 currency = os.environ.get('CURRENCY')
 ticker = os.environ.get('MINING_COIN')
 wallet_type = os.environ.get('BASE_COIN')
-decimal = os.environ.get('MINING_DECIMALS')
+decimal = int(os.environ.get('MINING_DECIMALS'))
 
 class PriceStats:
     def __init__(self):
@@ -28,7 +28,7 @@ class PriceStats:
         self.endpoints = {
             'price': f'',
             '2miners': f'{mining_url}/{wallet_address}',
-            'balance': f'{explorer_url}{wallet_address}',
+            'balance': f'{explorer_url}/{wallet_address}',
             'hive': f'{hive_url}/api/v2/farms/{hive_farm_id}/stats'
         }
         logger.info(f"Endpoints : ")

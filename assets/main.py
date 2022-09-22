@@ -5,11 +5,11 @@ from logger import logger
 
 
 
-wallet_address = os.environ.get('WALLET-ADDY')
-hive_farm_id = os.environ.get('FARM-ID')
-electric = float(os.environ.get('ELECTRIC-COST'))
-hive_key = os.environ.get('HIVE-KEY')
-cc_key = os.environ.get('CC-KEY')
+wallet_address = os.environ.get('WALLET_ADDY')
+hive_farm_id = os.environ.get('FARM_ID')
+electric = float(os.environ.get('ELECTRIC_COST'))
+hive_key = os.environ.get('HIVE_KEY')
+cc_key = os.environ.get('CC_KEY')
 explorer_url = os.environ.get('EXPLORER_URL')
 mining_url = os.environ.get('MINING_URL')
 hive_url = os.environ.get('HIVE_URL')

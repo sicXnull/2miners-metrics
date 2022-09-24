@@ -1,26 +1,22 @@
 import time, json, requests, os
+import logging.config
+import requests
 from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
 import requests
 from logger import logger
 
-ip_addy = os.environ.get('IP_ADDRESS')
-base_coin = os.environ.get('BASE_COIN')
-mining_coin = os.environ.get('MINING_COIN')
-currency = os.environ.get("CURRENCY")
-addy = os.environ.get('MINING_ADDRESS')
-name = os.environ.get('RIG_NAME')
-hive_url = os.environ.get('HIVE_URL')
-wallet_address = os.environ.get('WALLET_ADDY')
-hive_farm_id = os.environ.get('FARM_ID')
-electric = float(os.environ.get('ELECTRIC_COST'))
-hive_key = os.environ.get('HIVE_KEY')
-cc_key = os.environ.get('CC_KEY')
-explorer_url = os.environ.get('EXPLORER_URL')
-mining_url = os.environ.get('MINING_URL')
-decimal = int(os.environ.get('MINING_DECIMALS'))
-polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "300"))
-app_port = int(os.getenv("APP_PORT", "80"))
-exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
+# init logger
+
+logging.basicConfig(
+	level=logging.INFO,
+	format="%(asctime)s [%(levelname)s] %(message)s",
+	handlers=[
+		logging.FileHandler("../logs/log_file.log"),
+		logging.StreamHandler()
+	]
+)
+
+logger = logging.getLogger(__name__)
 
 class PromExporter:
 	
@@ -252,6 +248,8 @@ class PromExporter:
 			json.dump(self.data, file, indent=4)
 			
 		logger.info("Data Write Complete")
+
+
 
 
 def main():

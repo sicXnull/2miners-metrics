@@ -1,37 +1,9 @@
-FROM ubuntu:20.04
-MAINTAINER sic
+FROM python:3.7-alpine
+WORKDIR /home/
+COPY ./requirements.txt .
+RUN apk --no-cache add --virtual build-dependencies build-base \
+    && pip install -r requirements.txt \
+    && apk del build-dependencies
+COPY ./exporter.py .
 
-EXPOSE 9877
-EXPOSE 9977
-EXPOSE 80
-
-SHELL ["/bin/sh", "-c"]
-
-# Default to supporting utf-8
-ENV LANG=C.UTF-8
-
-# Install required packages
-RUN apt-get update -q \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-      apache2 \
-      apache2-utils \
-      python3-pip \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-RUN service apache2 restart
-
-RUN mkdir /assets
-RUN mkdir /logs
-
-# Copy assets
-COPY assets/ /assets/
-
-WORKDIR /assets
-
-RUN pip3 install -r requirements.txt
-
-RUN chmod +x *.py
-RUN chmod +x *.sh
-
-ENTRYPOINT ["sh", "/assets/run.sh"]
+ENTRYPOINT ["python3", "exporter.py"]

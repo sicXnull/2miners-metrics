@@ -34,22 +34,18 @@ FARM_ID=<HiveOS Farm id>
 ELECTRIC_COST=<cents 12=0.12>
 HIVE_KEY=<HiveOS API Key>
 CC_KEY=<CryptoCompare API key>
-EXPLORER_URL=https://blockchain.info/balance?active=
-HIVE_URL=https://api2.hiveos.farm
-MINING_URL=https://<coin>.2miners.com/api/accounts
+EXPLORER_URL=blockchain.info/balance?active=
+HIVE_URL=api2.hiveos.farm
+MINING_URL=<coin>.2miners.com/api/accounts
 CURRENCY=USD
 BASE_COIN=BTC
 MINING_COIN=
 MINING_DECIMALS=
 ```
 
-- Run it while listening on port 9877,9977,8800 (8800 is optional, if you wish to see price converter json):
+- Run it while listening on port 9877
 
 ```sh
-docker run -d --env-file ./.env -p 9877:9877 -p 9977:9977 -p 8800:80 -v /opt/2miners-metrics/assets:/assets -v /opt/2miners-metrics/logs:/logs --name 2miners-metrics --restart=always 2miners-metrics:latest
+docker run -d --env-file ./.env -p 9877:9877 -v /opt/2miners-metrics/:/home --name 2miners-metrics --restart=always 2miners-metrics:latest
 ```
 ```
-
-- 2Miners Exporter Port - 9877
-- Conversion Exporter Port - 9977
-- Json Host - 8800

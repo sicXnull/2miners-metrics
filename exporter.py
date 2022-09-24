@@ -1,7 +1,7 @@
 import time, json, requests, os
+import logging.config
 from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
 import requests
-from logger import logger
 
 ip_addy = os.environ.get("IP_ADDRESS")
 base_coin = os.environ.get("BASE_COIN")
@@ -22,6 +22,18 @@ polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "300"))
 app_port = int(os.getenv("APP_PORT", "80"))
 exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
 
+# init logger
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("log_file.log"),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 class PromExporter:
     def __init__(self):

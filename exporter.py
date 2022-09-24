@@ -248,7 +248,7 @@ class PromExporter:
 	def writeFile(self):
 		logger.info(f"Writing Metrics Data")
 		
-		with open("/var/www/html/results.json", 'w') as file:
+		with open("/results.json", 'w') as file:
 			json.dump(self.data, file, indent=4)
 			
 		logger.info("Data Write Complete")

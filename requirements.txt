@@ -1,4 +1,2 @@
-prometheus-client
-requests
-urllib3
-logger
+prometheus-client==0.14.1
+requests==2.28.1

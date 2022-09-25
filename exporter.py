@@ -268,7 +268,7 @@ class PromExporter:
         self.gauges[f"jsonstats_price_{mining_coin}"].set(
             self.data["price"][f"price_{mining_coin}"][currency]
         )
-        self.gauges[f"jsonstats_wallet_balance_{base_coin}"].la
+        
         self.gauges[f"jsonstats_wallet_balance_{base_coin}"].set(
             self.data["balance"][f"wallet_balance_{base_coin}"]
         )

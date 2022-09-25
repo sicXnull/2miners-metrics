@@ -12,6 +12,7 @@ name = os.environ.get("RIG_NAME")
 hive_url = os.environ.get("HIVE_URL")
 wallet_address = os.environ.get("WALLET_ADDY")
 hive_farm_id = os.environ.get("FARM_ID")
+hive_worker_id = os.environ.get("WORKER_ID")
 electric = float(os.environ.get("ELECTRIC_COST"))
 hive_key = os.environ.get("HIVE_KEY")
 cc_key = os.environ.get("CC_KEY")
@@ -53,16 +54,28 @@ class PromExporter:
         self.wallet_type = base_coin
         self.hive_headers = {"Authorization": f"Bearer {hive_key}"}
         self.decimal = int(f'1{"0" * decimal}')
+        self.gpu_gauges_flag = False
         self.getGauges()
 
         self.endpoints = {
             "price": f"",
             "2miners": f"{mining_coin.lower()}.2miners.com/api/accounts/{addy}",
             "balance": f"{explorer_url}{wallet_address}",
-            "hive": f"{hive_url}/api/v2/farms/{hive_farm_id}/stats",
+            "hive": {
+                'farm': f"{hive_url}/api/v2/farms/{hive_farm_id}/stats",
+                'worker': f"{hive_url}/api/v2/farms/{hive_farm_id}/workers/{hive_worker_id}"
+            }
         }
 
-        self.data = {"price": {}, "2miners": {}, "balance": {}, "hive": {}}
+        self.data = {
+            "price": {},
+            "2miners": {},
+            "balance": {},
+            "hive": {
+                'farm': {},
+                'worker': {}
+            }
+        }
 
     def executeProcess(self):
 
@@ -118,29 +131,34 @@ class PromExporter:
             elif key == "hive":
                 logger.info(f"Hitting Hive for Farm Stats")
 
-                resp = requests.get(
-                    f"https://{self.endpoints[key]}", headers=self.hive_headers
+                self.data[key]['farm'] = requests.get(
+                    f"https://{self.endpoints[key]['farm']}", headers=self.hive_headers
                 ).json()
-                self.data[key] = resp
 
-                self.data[key][f"power_cost_{self.currency}"] = round(
-                    self.powerConversion(self.data[key]["stats"]["power_draw"]), 2
+                self.data[key]['worker'] = requests.get(
+                    f"https://{self.endpoints[key]['worker']}", headers=self.hive_headers
+                ).json()
+
+                self.data[key]['farm'][f"power_cost_{self.currency}"] = round(
+                    self.powerConversion(self.data[key]['farm']["stats"]["power_draw"]), 2
                 )
 
-                self.data[key]["mining_profitability"] = round(
+                self.data[key]['farm']["mining_profitability"] = round(
                     self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]
-                    - self.data[key][f"power_cost_{self.currency}"],
+                    - self.data[key]['farm'][f"power_cost_{self.currency}"],
                     2,
                 )
 
                 self.data[key]["mining_profitability_percent"] = round(
                     (
-                        self.data[key]["mining_profitability"]
+                        self.data[key]['farm']["mining_profitability"]
                         / self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]
                     )
                     * 100,
                     2,
                 )
+                
+                
 
             elif key == "2miners":
                 logger.info(f"Hitting 2Miners for Account Stats Data")
@@ -184,7 +202,10 @@ class PromExporter:
                 )
 
         logger.info(f"Data Extraction Complete")
-
+        
+    def getGauge(self, name, val):
+        self.gauges.update(name, val)
+        
     def getGauges(self):
         self.gauges = {
             f"jsonstats_price_{base_coin}": Gauge(
@@ -237,7 +258,7 @@ class PromExporter:
             "miner_shares_valid": Gauge("miner_shares_valid", "sharesValid"),
             "miner_current_balance": Gauge("miner_current_balance", "stats_balance"),
         }
-
+    
     def setGauges(self):
         logger.info(f"Setting Gauge Data")
         self.gauges[f"jsonstats_price_{base_coin}"].set(
@@ -247,7 +268,7 @@ class PromExporter:
         self.gauges[f"jsonstats_price_{mining_coin}"].set(
             self.data["price"][f"price_{mining_coin}"][currency]
         )
-
+        self.gauges[f"jsonstats_wallet_balance_{base_coin}"].la
         self.gauges[f"jsonstats_wallet_balance_{base_coin}"].set(
             self.data["balance"][f"wallet_balance_{base_coin}"]
         )
@@ -257,15 +278,15 @@ class PromExporter:
         )
 
         self.gauges[f"jsonstats_power_cost_{currency}"].set(
-            self.data["hive"][f"power_cost_{currency}"]
+            self.data["hive"]['farm'][f"power_cost_{currency}"]
         )
 
         self.gauges[f"jsonstats_mining_profitability"].set(
-            self.data["hive"]["mining_profitability"]
+            self.data["hive"]['farm']["mining_profitability"]
         )
 
         self.gauges[f"jsonstats_mining_profitability_percent"].set(
-            self.data["hive"]["mining_profitability_percent"]
+            self.data["hive"]['farm']["mining_profitability_percent"]
         )
 
         self.gauges[f"jsonstats_unpaid_balance_{mining_coin}"].set(

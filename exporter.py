@@ -148,7 +148,7 @@ class PromExporter:
                     2,
                 )
 
-                self.data[key]["mining_profitability_percent"] = round(
+                self.data[key]['farm']["mining_profitability_percent"] = round(
                     (
                         self.data[key]['farm']["mining_profitability"]
                         / self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]
@@ -208,7 +208,7 @@ class PromExporter:
             'gpu_fan': Gauge('hiveos_gpu_fan', 'GPU Fan Speed', GPU_LABELS),
             'gpu_hash': Gauge('hiveos_gpu_hash', 'GPU Hash Rate', GPU_LABELS),
             'gpu_mem_size': Gauge('hiveos_gpu_mem', 'GPU Memory Size', GPU_LABELS),
-            'gpu_mem_type': Gauge('hiveos_gpu_mem_type', 'GPU Memory Type', GPU_LABELS),
+            #'gpu_mem_type': Gauge('hiveos_gpu_mem_type', 'GPU Memory Type', GPU_LABELS),
             'gpu_power': Gauge('hiveos_gpu_power', 'GPU Power Consumption', GPU_LABELS),
             'gpu_mem_temp': Gauge('hiveos_gpu_mem_temp', 'GPU Memory Temperature', GPU_LABELS),
             'gpu_core_temp': Gauge('hiveos_gpu_core_temp', 'GPU Temperature', GPU_LABELS),
@@ -337,23 +337,23 @@ class PromExporter:
         #set gpu data
         for x in self.data['hive']['worker']['gpu_stats']:
 
-            lables = dict(brand=list(filter(lambda d: d['bus_number'] in [x['bus_num']], x['gpu_info']))[0]['details']['brand'],
-                          model=list(filter(lambda d: d['bus_number'] in [x['bus_num']], x['gpu_info']))[0]['details']['model'],
-                          name=list(filter(lambda d: d['bus_number'] in [x['bus_num']], x['gpu_info']))[0]['details']['name'],
+            lables = dict(brand=list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['brand'],
+                          model=list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['model'],
+                          name=list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['short_name'],
                           bus_num=x['bus_num'])
+
             self.gauges['gpu_fan'].labels(**lables).set(x['fan'])
             self.gauges['gpu_hash'].labels(**lables).set(x['hash'])
             self.gauges['gpu_power'].labels(**lables).set(x['power'])
             self.gauges['gpu_core_temp'].labels(**lables).set(x['temp'])
+            self.gauges['gpu_mem_temp'].labels(**lables).set(x['memtemp'])
+
             self.gauges['gpu_mem_size'].labels(**lables).set(
-                list(filter(lambda d: d['bus_number'] in [x['bus_num']], x['gpu_info']))[0]['details']['mem']
+                list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['details']['mem_gb']
             )
-            self.gauges['gpu_mem_type'].labels(**lables).set(
-                list(filter(lambda d: d['bus_number'] in [x['bus_num']], x['gpu_info']))[0]['details']['mem_type']
-            )
-            self.gauges['gpu_mem_temp'].labels(**lables).set(
-                list(filter(lambda d: d['bus_number'] in [x['bus_num']], x['gpu_info']))[0]['details']['mem_temp']
-            )
+            #self.gauges['gpu_mem_type'].labels(**lables).set(
+            #    list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['details']['mem_type']
+            #)
 
     def powerConversion(self, wattage):
         # converts a given wattage to daily cost

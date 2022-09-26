@@ -1,7 +1,7 @@
 import time, json, requests, os
 import logging.config
-from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
-import requests
+from prometheus_client import start_http_server, Gauge
+
 
 ip_addy = os.environ.get("IP_ADDRESS")
 base_coin = os.environ.get("BASE_COIN")

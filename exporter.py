@@ -54,7 +54,6 @@ class PromExporter:
         self.wallet_type = base_coin
         self.hive_headers = {"Authorization": f"Bearer {hive_key}"}
         self.decimal = int(f'1{"0" * decimal}')
-        self.gpu_gauges_flag = False
         self.getGauges()
 
         self.endpoints = {

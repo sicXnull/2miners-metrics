@@ -205,6 +205,7 @@ class PromExporter:
     def getGauges(self):
         GPU_LABELS = ['brand', 'model', 'name', 'bus_num']
         self.gauges = {
+    
             'gpu_fan': Gauge('hiveos_gpu_fan', 'GPU Fan Speed', GPU_LABELS),
             'gpu_hash': Gauge('hiveos_gpu_hash', 'GPU Hash Rate', GPU_LABELS),
             'gpu_mem_size': Gauge('hiveos_gpu_mem', 'GPU Memory Size', GPU_LABELS),
@@ -212,6 +213,19 @@ class PromExporter:
             'gpu_power': Gauge('hiveos_gpu_power', 'GPU Power Consumption', GPU_LABELS),
             'gpu_mem_temp': Gauge('hiveos_gpu_mem_temp', 'GPU Memory Temperature', GPU_LABELS),
             'gpu_core_temp': Gauge('hiveos_gpu_core_temp', 'GPU Temperature', GPU_LABELS),
+    
+            "workers_total": Gauge('hiveos_workers_total', 'Workers Total'),
+            "workers_online": Gauge('hiveos_workers_online', 'Workers Online'),
+            "workers_offline": Gauge('hiveos_workers_offline', 'Workers Offline'),
+            "gpus_total": Gauge('hiveos_gpus_total', 'Total GPUs'),
+            "gpus_online": Gauge('hiveos_gpus_online', 'Online GPUs'),
+            "gpus_offline": Gauge('hiveos_gpus_offline', 'Offline GPUs'),
+            "rigs_total": Gauge('hiveos_rigs_total', 'Total Rigs'),
+            "rigs_online": Gauge('hiveos_rigs_online', 'Online Rigs'),
+            "rigs_offline": Gauge('hiveos_rigs_offline', 'Offline Rigs'),
+            'rigs_power': Gauge('hiveos_rigs_power', 'Rigs Power'),
+            "accepted_share_rate": Gauge('hiveos_accepted_share_rate', 'Accepted Share Rate (ASR)'),
+            
             
             
             f"jsonstats_price_{base_coin}": Gauge(
@@ -354,8 +368,21 @@ class PromExporter:
             #self.gauges['gpu_mem_type'].labels(**lables).set(
             #    list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['details']['mem_type']
             #)
+        
+        self.gauges[f"workers_total"].set(self.data["hive"]["farm"]["workers_total"])
+        self.gauges[f"workers_online"].set(self.data["hive"]["farm"]["workers_online"])
+        self.gauges[f"workers_offline"].set(self.data["hive"]["farm"]["workers_offline"])
+        self.gauges[f"gpus_total"].set(self.data["hive"]["farm"]["gpus_total"])
+        self.gauges[f"gpus_online"].set(self.data["hive"]["farm"]["gpus_online"])
+        self.gauges[f"gpus_offline"].set(self.data["hive"]["farm"]["gpus_offline"])
+        self.gauges[f"rigs_total"].set(self.data["hive"]["farm"]["rigs_total"])
+        self.gauges[f"rigs_online"].set(self.data["hive"]["farm"]["rigs_online"])
+        self.gauges[f"rigs_offline"].set(self.data["hive"]["farm"]["rigs_offline"])
+        self.gauges[f"rigs_power"].set(self.data["hive"]["farm"]["rigs_power"])
+        self.gauges[f"accepted_share_rate"].set(self.data["hive"]["farm"]["asr"])
+      
 
-    def powerConversion(self, wattage):
+        def powerConversion(self, wattage):
         # converts a given wattage to daily cost
         kwh = wattage * 24 / 1000  # 24 hrs
         cents = 100

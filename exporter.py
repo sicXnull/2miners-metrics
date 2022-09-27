@@ -382,7 +382,7 @@ class PromExporter:
         self.gauges[f"accepted_share_rate"].set(self.data["hive"]["farm"]["asr"])
       
 
-        def powerConversion(self, wattage):
+    def powerConversion(self, wattage):
         # converts a given wattage to daily cost
         kwh = wattage * 24 / 1000  # 24 hrs
         cents = 100

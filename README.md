@@ -1,9 +1,10 @@
 # 2miners-metrics
 
 
--Consists of the following
-- A Prometheus Exporter for <https://2miners.com/>
-- Price Converter (Eth value to BTC/USD)
+-A Prometheus Exporter for the following
+- https://2miners.com
+- HiveOS Exporter
+- Price Converter (Coin value to BTC/USD)
 - HiveOS Wattage to USD Conversion
 - Exporter for above conversions
 

@@ -1,7 +1,7 @@
 import time, json, requests, os
 import logging.config
-from prometheus_client import start_http_server, Gauge, Info, Summary, Enum
-import requests
+from prometheus_client import start_http_server, Gauge
+
 
 ip_addy = os.environ.get("IP_ADDRESS")
 base_coin = os.environ.get("BASE_COIN")
@@ -12,6 +12,7 @@ name = os.environ.get("RIG_NAME")
 hive_url = os.environ.get("HIVE_URL")
 wallet_address = os.environ.get("WALLET_ADDY")
 hive_farm_id = os.environ.get("FARM_ID")
+hive_worker_id = os.environ.get("WORKER_ID")
 electric = float(os.environ.get("ELECTRIC_COST"))
 hive_key = os.environ.get("HIVE_KEY")
 cc_key = os.environ.get("CC_KEY")
@@ -59,10 +60,21 @@ class PromExporter:
             "price": f"",
             "2miners": f"{mining_coin.lower()}.2miners.com/api/accounts/{addy}",
             "balance": f"{explorer_url}{wallet_address}",
-            "hive": f"{hive_url}/api/v2/farms/{hive_farm_id}/stats",
+            "hive": {
+                'farm': f"{hive_url}/api/v2/farms/{hive_farm_id}/stats",
+                'worker': f"{hive_url}/api/v2/farms/{hive_farm_id}/workers/{hive_worker_id}"
+            }
         }
 
-        self.data = {"price": {}, "2miners": {}, "balance": {}, "hive": {}}
+        self.data = {
+            "price": {},
+            "2miners": {},
+            "balance": {},
+            "hive": {
+                'farm': {},
+                'worker': {}
+            }
+        }
 
     def executeProcess(self):
 
@@ -118,29 +130,34 @@ class PromExporter:
             elif key == "hive":
                 logger.info(f"Hitting Hive for Farm Stats")
 
-                resp = requests.get(
-                    f"https://{self.endpoints[key]}", headers=self.hive_headers
+                self.data[key]['farm'] = requests.get(
+                    f"https://{self.endpoints[key]['farm']}", headers=self.hive_headers
                 ).json()
-                self.data[key] = resp
+                logger.info(f"Hitting Hive for Worker Stats")
+                self.data[key]['worker'] = requests.get(
+                    f"https://{self.endpoints[key]['worker']}", headers=self.hive_headers
+                ).json()
 
-                self.data[key][f"power_cost_{self.currency}"] = round(
-                    self.powerConversion(self.data[key]["stats"]["power_draw"]), 2
+                self.data[key]['farm'][f"power_cost_{self.currency}"] = round(
+                    self.powerConversion(self.data[key]['farm']["stats"]["power_draw"]), 2
                 )
 
-                self.data[key]["mining_profitability"] = round(
+                self.data[key]['farm']["mining_profitability"] = round(
                     self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]
-                    - self.data[key][f"power_cost_{self.currency}"],
+                    - self.data[key]['farm'][f"power_cost_{self.currency}"],
                     2,
                 )
 
-                self.data[key]["mining_profitability_percent"] = round(
+                self.data[key]['farm']["mining_profitability_percent"] = round(
                     (
-                        self.data[key]["mining_profitability"]
+                        self.data[key]['farm']["mining_profitability"]
                         / self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]
                     )
                     * 100,
                     2,
                 )
+                
+                
 
             elif key == "2miners":
                 logger.info(f"Hitting 2Miners for Account Stats Data")
@@ -184,9 +201,19 @@ class PromExporter:
                 )
 
         logger.info(f"Data Extraction Complete")
-
+        
     def getGauges(self):
+        GPU_LABELS = ['brand', 'model', 'name', 'bus_num']
         self.gauges = {
+            'gpu_fan': Gauge('hiveos_gpu_fan', 'GPU Fan Speed', GPU_LABELS),
+            'gpu_hash': Gauge('hiveos_gpu_hash', 'GPU Hash Rate', GPU_LABELS),
+            'gpu_mem_size': Gauge('hiveos_gpu_mem', 'GPU Memory Size', GPU_LABELS),
+            #'gpu_mem_type': Gauge('hiveos_gpu_mem_type', 'GPU Memory Type', GPU_LABELS),
+            'gpu_power': Gauge('hiveos_gpu_power', 'GPU Power Consumption', GPU_LABELS),
+            'gpu_mem_temp': Gauge('hiveos_gpu_mem_temp', 'GPU Memory Temperature', GPU_LABELS),
+            'gpu_core_temp': Gauge('hiveos_gpu_core_temp', 'GPU Temperature', GPU_LABELS),
+            
+            
             f"jsonstats_price_{base_coin}": Gauge(
                 f"jsonstats_price_{base_coin}", f"price_{base_coin}"
             ),
@@ -194,19 +221,16 @@ class PromExporter:
                 f"jsonstats_price_{mining_coin}", f"price_{mining_coin}"
             ),
             f"jsonstats_unpaid_balance_{mining_coin}": Gauge(
-                f"jsonstats_unpaid_balance_{mining_coin}",
-                f"unpaid_balance_{mining_coin}",
+                f"jsonstats_unpaid_balance_{mining_coin}", f"unpaid_balance_{mining_coin}",
             ),
             f"jsonstats_unpaid_balance_{currency}": Gauge(
                 f"jsonstats_unpaid_balance_{currency}", f"unpaid_balance_{currency}"
             ),
             f"jsonstats_unpaid_last_24_hr_{mining_coin}": Gauge(
-                f"jsonstats_unpaid_last_24_hr_{mining_coin}",
-                f"unpaid_last_24_hr_{mining_coin}",
+                f"jsonstats_unpaid_last_24_hr_{mining_coin}", f"unpaid_last_24_hr_{mining_coin}",
             ),
             f"jsonstats_unpaid_last_24_hr_{currency}": Gauge(
-                f"jsonstats_unpaid_last_24_hr_{currency}",
-                f"unpaid_last_24_hr_{currency}",
+                f"jsonstats_unpaid_last_24_hr_{currency}", f"unpaid_last_24_hr_{currency}",
             ),
             f"jsonstats_wallet_balance_{base_coin}": Gauge(
                 f"jsonstats_wallet_balance_{base_coin}", f"wallet_balance_{base_coin}"
@@ -226,9 +250,7 @@ class PromExporter:
             "miner_dayreward_number": Gauge("miner_dayreward_number", "24hnumreward"),
             "miner_dayreward": Gauge("miner_dayreward", "24hreward"),
             "miner_currentHashrate": Gauge("miner_hashrate_current", "currentHashrate"),
-            "miner_reportedHashrate": Gauge(
-                "miner_hashrate_reported", "reportedHashrate"
-            ),
+            "miner_reportedHashrate": Gauge("miner_hashrate_reported", "reportedHashrate"),
             "miner_current_luck": Gauge("miner_current_luck", "currentLuck"),
             "miner_averageHashrate": Gauge("miner_averageHashrate", "averageHashrate"),
             "miner_payments_total": Gauge("miner_payments_total", "paymentsTotal"),
@@ -237,7 +259,7 @@ class PromExporter:
             "miner_shares_valid": Gauge("miner_shares_valid", "sharesValid"),
             "miner_current_balance": Gauge("miner_current_balance", "stats_balance"),
         }
-
+    
     def setGauges(self):
         logger.info(f"Setting Gauge Data")
         self.gauges[f"jsonstats_price_{base_coin}"].set(
@@ -247,7 +269,7 @@ class PromExporter:
         self.gauges[f"jsonstats_price_{mining_coin}"].set(
             self.data["price"][f"price_{mining_coin}"][currency]
         )
-
+        
         self.gauges[f"jsonstats_wallet_balance_{base_coin}"].set(
             self.data["balance"][f"wallet_balance_{base_coin}"]
         )
@@ -257,15 +279,15 @@ class PromExporter:
         )
 
         self.gauges[f"jsonstats_power_cost_{currency}"].set(
-            self.data["hive"][f"power_cost_{currency}"]
+            self.data["hive"]['farm'][f"power_cost_{currency}"]
         )
 
         self.gauges[f"jsonstats_mining_profitability"].set(
-            self.data["hive"]["mining_profitability"]
+            self.data["hive"]['farm']["mining_profitability"]
         )
 
         self.gauges[f"jsonstats_mining_profitability_percent"].set(
-            self.data["hive"]["mining_profitability_percent"]
+            self.data["hive"]['farm']["mining_profitability_percent"]
         )
 
         self.gauges[f"jsonstats_unpaid_balance_{mining_coin}"].set(
@@ -311,6 +333,27 @@ class PromExporter:
         self.gauges[f"miner_current_balance"].set(
             self.data["2miners"]["stats"]["balance"]
         )
+        
+        #set gpu data
+        for x in self.data['hive']['worker']['gpu_stats']:
+
+            lables = dict(brand=list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['brand'],
+                          model=list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['model'],
+                          name=list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['short_name'],
+                          bus_num=x['bus_num'])
+
+            self.gauges['gpu_fan'].labels(**lables).set(x['fan'])
+            self.gauges['gpu_hash'].labels(**lables).set(x['hash'])
+            self.gauges['gpu_power'].labels(**lables).set(x['power'])
+            self.gauges['gpu_core_temp'].labels(**lables).set(x['temp'])
+            self.gauges['gpu_mem_temp'].labels(**lables).set(x['memtemp'])
+
+            self.gauges['gpu_mem_size'].labels(**lables).set(
+                list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['details']['mem_gb']
+            )
+            #self.gauges['gpu_mem_type'].labels(**lables).set(
+            #    list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['details']['mem_type']
+            #)
 
     def powerConversion(self, wattage):
         # converts a given wattage to daily cost

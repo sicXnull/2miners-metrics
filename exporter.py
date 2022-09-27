@@ -318,11 +318,12 @@ class PromExporter:
         self.gauges[f"jsonstats_wallet_balance_{currency}"].set(
             self.data["balance"][f"wallet_balance_{currency}"])
     def setGauges(self):
-        logger.info(f"Setting Metrics")
+        logger.info(f"Begin Setting Metrics data...")
         self.set_price()
         self.set_balance()
         self.set_2miners()
         self.set_hive()
+        logger.info(f"Metrics Set Successfully.")
       
 
     def powerConversion(self, wattage):

@@ -44,7 +44,7 @@ class PromExporter:
         executeProcess() - Main Process Loop
         fetchData() - Aggregates all Data
         getGauges() - Initializes the Prometheus Collectors
-        setGauges() - Sets the Gauges with the Aggregate Data
+        setGauges() - Sets Metrics
         writeFile() - Writes response Data to json file for apache to serve
         """
         logger.info(f"Init PromExporter")
@@ -82,7 +82,7 @@ class PromExporter:
         logger.info(f"Beginning Running Loop")
         while True:
             self.fetchData()
-            self.setGauges()
+            self.setMetrics()
             self.writeFile()
             logger.info(f"Sleeping for  : {polling_interval_seconds}(s)")
             time.sleep(polling_interval_seconds)
@@ -309,7 +309,7 @@ class PromExporter:
         
         self.gauges[f"miner_current_balance"].set(
             self.data["2miners"]["stats"]["balance"])
-            
+
     def set_balance(self):
         logger.info(f"Setting Balance Data")
         self.gauges[f"jsonstats_wallet_balance_{base_coin}"].set(
@@ -317,14 +317,14 @@ class PromExporter:
     
         self.gauges[f"jsonstats_wallet_balance_{currency}"].set(
             self.data["balance"][f"wallet_balance_{currency}"])
-    def setGauges(self):
+
+    def setMetrics(self):
         logger.info(f"Begin Setting Metrics data...")
         self.set_price()
         self.set_balance()
         self.set_2miners()
         self.set_hive()
         logger.info(f"Metrics Set Successfully.")
-      
 
     def powerConversion(self, wattage):
         # converts a given wattage to daily cost

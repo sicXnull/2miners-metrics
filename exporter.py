@@ -369,17 +369,17 @@ class PromExporter:
             #    list(filter(lambda d: d['bus_number'] in [x['bus_num']], self.data['hive']['worker']['gpu_info']))[0]['details']['mem_type']
             #)
         
-        self.gauges[f"workers_total"].set(self.data["hive"]["farm"]["workers_total"])
-        self.gauges[f"workers_online"].set(self.data["hive"]["farm"]["workers_online"])
-        self.gauges[f"workers_offline"].set(self.data["hive"]["farm"]["workers_offline"])
-        self.gauges[f"gpus_total"].set(self.data["hive"]["farm"]["gpus_total"])
-        self.gauges[f"gpus_online"].set(self.data["hive"]["farm"]["gpus_online"])
-        self.gauges[f"gpus_offline"].set(self.data["hive"]["farm"]["gpus_offline"])
-        self.gauges[f"rigs_total"].set(self.data["hive"]["farm"]["rigs_total"])
-        self.gauges[f"rigs_online"].set(self.data["hive"]["farm"]["rigs_online"])
-        self.gauges[f"rigs_offline"].set(self.data["hive"]["farm"]["rigs_offline"])
-        self.gauges[f"rigs_power"].set(self.data["hive"]["farm"]["rigs_power"])
-        self.gauges[f"accepted_share_rate"].set(self.data["hive"]["farm"]["asr"])
+        self.gauges[f"workers_total"].set(self.data["hive"]["farm"]["stats"]["workers_total"])
+        self.gauges[f"workers_online"].set(self.data["hive"]["farm"]["stats"]["workers_online"])
+        self.gauges[f"workers_offline"].set(self.data["hive"]["farm"]["stats"]["workers_offline"])
+        self.gauges[f"gpus_total"].set(self.data["hive"]["farm"]["stats"]["gpus_total"])
+        self.gauges[f"gpus_online"].set(self.data["hive"]["farm"]["stats"]["gpus_online"])
+        self.gauges[f"gpus_offline"].set(self.data["hive"]["farm"]["stats"]["gpus_offline"])
+        self.gauges[f"rigs_total"].set(self.data["hive"]["farm"]["stats"]["rigs_total"])
+        self.gauges[f"rigs_online"].set(self.data["hive"]["farm"]["stats"]["rigs_online"])
+        self.gauges[f"rigs_offline"].set(self.data["hive"]["farm"]["stats"]["rigs_offline"])
+        self.gauges[f"rigs_power"].set(self.data["hive"]["farm"]["stats"]["rigs_power"])
+        self.gauges[f"accepted_share_rate"].set(self.data["hive"]["farm"]["stats"]["asr"])
       
 
     def powerConversion(self, wattage):

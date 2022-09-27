@@ -319,7 +319,6 @@ class PromExporter:
             self.data["balance"][f"wallet_balance_{currency}"])
     def setGauges(self):
         logger.info(f"Setting Metrics")
-        self.setPrice()
         self.set_price()
         self.set_balance()
         self.set_2miners()

@@ -195,6 +195,7 @@ class PromExporter:
             "miner_shares_stale": Gauge("miner_shares_stale", "sharesStale"),
             "miner_shares_valid": Gauge("miner_shares_valid", "sharesValid"),
             "miner_current_balance": Gauge("miner_current_balance", "stats_balance"),
+            
             f"jsonstats_price_{base_coin}": Gauge(
                 f"jsonstats_price_{base_coin}", f"price_{base_coin}"),
             

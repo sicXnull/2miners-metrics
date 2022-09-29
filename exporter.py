@@ -156,9 +156,10 @@ class PromExporter:
         logger.info(f"Data Extraction Complete")
         
     def getGauges(self):
+
         GPU_LABELS = ['brand', 'model', 'name', 'bus_num']
+        
         self.gauges = {
-    
             'gpu_fan': Gauge('hiveos_gpu_fan', 'GPU Fan Speed', GPU_LABELS),
             'gpu_hash': Gauge('hiveos_gpu_hash', 'GPU Hash Rate', GPU_LABELS),
             'gpu_mem_size': Gauge('hiveos_gpu_mem', 'GPU Memory Size', GPU_LABELS),
@@ -175,6 +176,12 @@ class PromExporter:
             "rigs_total": Gauge('hiveos_rigs_total', 'Total Rigs'),
             "rigs_online": Gauge('hiveos_rigs_online', 'Online Rigs'),
             "rigs_offline": Gauge('hiveos_rigs_offline', 'Offline Rigs'),
+            'shares_accepted': Gauge('hiveos_shares_accepted', 'SharesAccepted'),
+            'shares_rejected': Gauge('hiveos_shares_rejected', 'Shares Rejected'),
+            'shares_invalid': Gauge('hiveos_shares_invalid', 'Shares Invalid'),
+            'shares_total': Gauge('hiveos_shares_total', 'Shares Total'),
+            'shares_ratio': Gauge('hiveos_shares_ratio', 'Shares Ratio'),
+            'miner_start_time': Gauge('hiveos_miner_start_time', 'Miner Start Time'),
             'rigs_power': Gauge('hiveos_rigs_power', 'Rigs Power'),
             "accepted_share_rate": Gauge('hiveos_accepted_share_rate', 'Accepted Share Rate (ASR)'),
             "miner_dayreward_number": Gauge("miner_dayreward_number", "24hnumreward"),
@@ -188,7 +195,6 @@ class PromExporter:
             "miner_shares_stale": Gauge("miner_shares_stale", "sharesStale"),
             "miner_shares_valid": Gauge("miner_shares_valid", "sharesValid"),
             "miner_current_balance": Gauge("miner_current_balance", "stats_balance"),
-            
             f"jsonstats_price_{base_coin}": Gauge(
                 f"jsonstats_price_{base_coin}", f"price_{base_coin}"),
             
@@ -270,11 +276,15 @@ class PromExporter:
                             self.data['hive']['worker']['gpu_info']))[0]['details']['mem_type'])
             """
 
-        worker = self.data['hive']['worker']['miners_summary']['hashrates'][0]
-        stats = worker = self.data["hive"]["farm"]["stats"]
-        shares = worker["shares"]
+        hashrates = worker["miners_summary"]["hashrates"][0]
+        shares = hashrates["shares"]
         self.gauges[f"hiveos_shares_accepted"].set(shares["accepted"])
         self.gauges[f"hiveos_shares_rejected"].set(shares["rejected"])
+        self.gauges[f"hiveos_shares_invalid"].set(shares["invalid"])
+        self.gauges[f"hiveos_shares_total"].set(shares["total"])
+        self.gauges[f"hiveos_shares_ratio"].set(shares["ratio"])
+        self.gauges[f"hiveos_miner_start_time"].set(stats["miner_start_time"])
+        
 
     def set_price(self):
         logger.info(f"Setting Price Data")

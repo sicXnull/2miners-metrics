@@ -188,6 +188,9 @@ class PromExporter:
             "miner_shares_stale": Gauge("miner_shares_stale", "sharesStale"),
             "miner_shares_valid": Gauge("miner_shares_valid", "sharesValid"),
             "miner_current_balance": Gauge("miner_current_balance", "stats_balance"),
+            "hiveos_shares_accepted": Gauge("hiveos_shares_accepted", "accepted"),
+            "hiveos_shares_rejected": Gauge("hiveos_shares_rejected", "rejected"),
+
             
             f"jsonstats_price_{base_coin}": Gauge(
                 f"jsonstats_price_{base_coin}", f"price_{base_coin}"),
@@ -271,7 +274,6 @@ class PromExporter:
             """
 
         worker = self.data['hive']['worker']['miners_summary']['hashrates'][0]
-        stats = worker = self.data["hive"]["farm"]["stats"]
         shares = worker["shares"]
         self.gauges[f"hiveos_shares_accepted"].set(shares["accepted"])
         self.gauges[f"hiveos_shares_rejected"].set(shares["rejected"])

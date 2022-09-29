@@ -278,12 +278,12 @@ class PromExporter:
 
         hashrates = worker["miners_summary"]["hashrates"][0]
         shares = hashrates["shares"]
-        self.gauges[f"hiveos_shares_accepted"].set(shares["accepted"])
-        self.gauges[f"hiveos_shares_rejected"].set(shares["rejected"])
-        self.gauges[f"hiveos_shares_invalid"].set(shares["invalid"])
-        self.gauges[f"hiveos_shares_total"].set(shares["total"])
-        self.gauges[f"hiveos_shares_ratio"].set(shares["ratio"])
-        self.gauges[f"hiveos_miner_start_time"].set(stats["miner_start_time"])
+        self.gauges[f"shares_accepted"].set(shares["accepted"])
+        self.gauges[f"shares_rejected"].set(shares["rejected"])
+        self.gauges[f"shares_invalid"].set(shares["invalid"])
+        self.gauges[f"shares_total"].set(shares["total"])
+        self.gauges[f"shares_ratio"].set(shares["ratio"])
+        self.gauges[f"miner_start_time"].set(stats["miner_start_time"])
         
 
     def set_price(self):

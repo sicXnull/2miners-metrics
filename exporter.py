@@ -269,7 +269,20 @@ class PromExporter:
                 list(filter(lambda d: d['bus_number'] in [x['bus_num']],
                             self.data['hive']['worker']['gpu_info']))[0]['details']['mem_type'])
             """
-            
+
+        worker = self.data['hive']['worker']['miners_summary']['hashrates'][0]
+        stats = worker = self.data["hive"]["farm"]["stats"]
+        shares = worker["shares"]
+        self.gauges[f"hiveos_shares_accepted"].set(shares["accepted"])
+        self.gauges[f"hiveos_shares_rejected"].set(shares["rejected"])
+
+
+    # self.gauges is our gauge dictionary
+    # hiveos_shares_ratio is the key we are retreiving from the dict
+    # each keys value is a Gauge object
+    # once we call this object we have access to it's functions, such as set
+    # which we pass to the gauge
+
     def set_price(self):
         logger.info(f"Setting Price Data")
         self.gauges[f"jsonstats_price_{base_coin}"].set(

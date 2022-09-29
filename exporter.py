@@ -273,8 +273,8 @@ class PromExporter:
                             self.data['hive']['worker']['gpu_info']))[0]['details']['mem_type'])
             """
 
-        worker = self.data['hive']['worker']['miners_summary']['hashrates'][0]
-        shares = worker["shares"]
+        hashrates = worker['miners_summary']['hashrates'][0]
+        shares = hashrates["shares"]
         self.gauges[f"hiveos_shares_accepted"].set(shares["accepted"])
         self.gauges[f"hiveos_shares_rejected"].set(shares["rejected"])
 

@@ -1,6 +1,7 @@
-import time, json, requests, os
+import time, json, requests, os, threading, asyncio
 import logging.config
 from prometheus_client import start_http_server, Gauge
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 base_coin = os.environ.get("BASE_COIN")
 mining_coin = os.environ.get("MINING_COIN")
@@ -18,7 +19,7 @@ explorer_url = os.environ.get("EXPLORER_URL")
 decimal = int(os.environ.get("MINING_DECIMALS"))
 polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "300"))
 exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
-
+api_port = int(os.environ.get("APP_PORT"))
 # init logger
 
 logging.basicConfig(
@@ -34,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 class PromExporter:
     def __init__(self):
+        
         """
         Prometheus Exporter Object
 
@@ -68,8 +70,8 @@ class PromExporter:
                 'worker': {}
             }
         }
-
-    def executeProcess(self):
+        
+    async def executeProcess(self):
 
         # Metrics Loop
         logger.info(f"Beginning Running Loop")
@@ -78,7 +80,8 @@ class PromExporter:
             self.setMetrics()
             self.writeFile()
             logger.info(f"Sleeping for  : {polling_interval_seconds}(s)")
-            time.sleep(polling_interval_seconds)
+            await asyncio.sleep(polling_interval_seconds)
+            #time.sleep(polling_interval_seconds)
 
     def fetchData(self):
         logger.info(f"Begin Data Extraction..")
@@ -355,18 +358,40 @@ class PromExporter:
         logger.info("Data Write Complete")
 
 
+# Base Python HTTP Server to serve full json api
+class MyServer(BaseHTTPRequestHandler):
+    def _set_headers(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+    
+    def do_HEAD(self):
+        self._set_headers()
+    
+    # GET sends back a Hello world message
+    def do_GET(self):
+        self._set_headers()
+        with open('results.json', 'r') as f:
+            self.wfile.write(f.read().encode('utf-8'))
+
+
 def main():
     # Main entry point
-
     # init Prom Exporter Object
     exporter = PromExporter()
-
     # start up prom http server for gauge data
     start_http_server(exporter_port)
+    
+    
+    async def jsonAPI():
+        HTTPServer(('localhost', api_port), MyServer).serve_forever()
+        await asyncio.sleep(1)
 
-    # trigger process
-    exporter.executeProcess()
-
+    # async functions to kickoff jobs
+    async def run_jobs():
+        await asyncio.gather(exporter.executeProcess(), jsonAPI())
+        
+    asyncio.run(run_jobs())
 
 if __name__ == "__main__":
     main()

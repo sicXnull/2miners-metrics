@@ -2,8 +2,6 @@ import time, json, requests, os
 import logging.config
 from prometheus_client import start_http_server, Gauge
 
-
-ip_addy = os.environ.get("IP_ADDRESS")
 base_coin = os.environ.get("BASE_COIN")
 mining_coin = os.environ.get("MINING_COIN")
 currency = os.environ.get("CURRENCY")
@@ -17,10 +15,8 @@ electric = float(os.environ.get("ELECTRIC_COST"))
 hive_key = os.environ.get("HIVE_KEY")
 cc_key = os.environ.get("CC_KEY")
 explorer_url = os.environ.get("EXPLORER_URL")
-mining_url = os.environ.get("MINING_URL")
 decimal = int(os.environ.get("MINING_DECIMALS"))
 polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "300"))
-app_port = int(os.getenv("APP_PORT", "80"))
 exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
 
 # init logger

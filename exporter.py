@@ -286,7 +286,7 @@ class PromExporter:
         self.gauges[f"shares_total"].set(shares["total"])
         self.gauges[f"shares_ratio"].set(shares["ratio"])
         self.gauges[f"miner_start_time"].set(worker["stats"]["miner_start_time"])
-        self.gauges[f"miner_duration"].set(time.time() - worker["stats"]["miner_start_time"])
+        self.gauges[f"miner_duration"].set(int(time.time() - worker["stats"]["miner_start_time"]))
 
     def set_price(self):
         logger.info(f"Setting Price Data")

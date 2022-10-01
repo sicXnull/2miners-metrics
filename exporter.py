@@ -45,9 +45,6 @@ class PromExporter:
         """
         logger.info(f"Init PromExporter")
 
-        self.currency = currency
-        self.ticker = mining_coin
-        self.wallet_type = base_coin
         self.hive_headers = {"Authorization": f"Bearer {hive_key}"}
         self.decimal = int(f'1{"0" * decimal}')
         self.getGauges()
@@ -90,23 +87,23 @@ class PromExporter:
             if key == "price":
                 logger.info(f"Hitting cryptoCompare for Price Data")
 
-                self.data[key][f"{key}_{self.wallet_type}"] = requests.get(
-                    self.priceURL(self.wallet_type, self.currency)).json()
+                self.data[key][f"{key}_{base_coin}"] = requests.get(
+                    self.priceURL(base_coin, currency)).json()
 
-                self.data[key][f"{key}_{self.ticker}"] = requests.get(
-                    self.priceURL(self.ticker, self.currency)).json()
+                self.data[key][f"{key}_{mining_coin}"] = requests.get(
+                    self.priceURL(mining_coin, currency)).json()
 
             elif key == "balance":
                 logger.info(f"Hitting Explorer for Wallet Balance Data")
 
                 self.data[key] = requests.get(f"https://{self.endpoints[key]}").json()
 
-                self.data[key].update({f"wallet_{key}_{self.wallet_type}": round(
+                self.data[key].update({f"wallet_{key}_{base_coin}": round(
                     self.data[key][wallet_address]["final_balance"] / self.decimal, 5, )})
 
-                self.data[key].update({f"wallet_{key}_{self.currency}": round(
-                    self.data[key][f"wallet_{key}_{self.wallet_type}"]
-                    * self.data["price"][f"price_{self.wallet_type}"][currency], 2,)})
+                self.data[key].update({f"wallet_{key}_{currency}": round(
+                    self.data[key][f"wallet_{key}_{base_coin}"]
+                    * self.data["price"][f"price_{base_coin}"][currency], 2,)})
 
             elif key == "hive":
                 logger.info(f"Hitting Hive for Farm Stats")
@@ -118,16 +115,16 @@ class PromExporter:
                 self.data[key]['worker'] = requests.get(
                     f"https://{self.endpoints[key]['worker']}", headers=self.hive_headers).json()
 
-                self.data[key]['farm'][f"power_cost_{self.currency}"] = round(
+                self.data[key]['farm'][f"power_cost_{currency}"] = round(
                     self.powerConversion(self.data[key]['farm']["stats"]["power_draw"]), 2)
 
                 self.data[key]['farm']["mining_profitability"] = round(
-                    self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]
-                    - self.data[key]['farm'][f"power_cost_{self.currency}"], 2,)
+                    self.data["2miners"][f"unpaid_last_24_hr_{currency}"]
+                    - self.data[key]['farm'][f"power_cost_{currency}"], 2,)
 
                 self.data[key]['farm']["mining_profitability_percent"] = round(
                     (self.data[key]['farm']["mining_profitability"]
-                     / self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]) * 100, 2,)
+                     / self.data["2miners"][f"unpaid_last_24_hr_{currency}"]) * 100, 2,)
                 
 
             elif key == "2miners":
@@ -135,19 +132,19 @@ class PromExporter:
 
                 self.data[key] = requests.get(f"https://{self.endpoints[key]}").json()
 
-                self.data[key].update({f"unpaid_balance_{self.ticker}": round(
+                self.data[key].update({f"unpaid_balance_{mining_coin}": round(
                     self.data[key]["stats"]["balance"] / self.decimal, 5)})
 
-                self.data[key].update({f"unpaid_balance_{self.currency}": round(
-                    self.data[key][f"unpaid_balance_{self.ticker}"] *
-                    self.data["price"][f"price_{self.ticker}"][currency],2,)})
+                self.data[key].update({f"unpaid_balance_{currency}": round(
+                    self.data[key][f"unpaid_balance_{mining_coin}"] *
+                    self.data["price"][f"price_{mining_coin}"][currency],2,)})
 
-                self.data[key].update({f"unpaid_last_24_hr_{self.ticker}": round(
+                self.data[key].update({f"unpaid_last_24_hr_{mining_coin}": round(
                     self.data[key]["sumrewards"][2]["reward"] / self.decimal, 5)})
 
-                self.data[key].update({f"unpaid_last_24_hr_{self.currency}": round(
-                    self.data[key][f"unpaid_last_24_hr_{self.ticker}"] *
-                    self.data["price"][f"price_{self.ticker}"][currency], 2,)})
+                self.data[key].update({f"unpaid_last_24_hr_{currency}": round(
+                    self.data[key][f"unpaid_last_24_hr_{mining_coin}"] *
+                    self.data["price"][f"price_{mining_coin}"][currency], 2,)})
 
         logger.info(f"Data Extraction Complete")
         

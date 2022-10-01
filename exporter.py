@@ -1,4 +1,4 @@
-import time, json, requests, os, threading, asyncio
+import time, json, requests, os, asyncio, threading
 import logging.config
 from prometheus_client import start_http_server, Gauge
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -17,9 +17,9 @@ hive_key = os.environ.get("HIVE_KEY")
 cc_key = os.environ.get("CC_KEY")
 explorer_url = os.environ.get("EXPLORER_URL")
 decimal = int(os.environ.get("MINING_DECIMALS"))
-polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "300"))
-exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
-api_port = int(os.environ.get("APP_PORT"))
+polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", 300))
+exporter_port = int(os.getenv("EXPORTER_PORT", 9877))
+api_port = int(os.environ.get("APP_PORT", 80))
 # init logger
 
 logging.basicConfig(
@@ -71,17 +71,15 @@ class PromExporter:
             }
         }
         
-    async def executeProcess(self):
-
+    def executeProcess(self):
         # Metrics Loop
-        logger.info(f"Beginning Running Loop")
+        logger.info(f"Beginning Exporter Running Loop")
         while True:
             self.fetchData()
             self.setMetrics()
             self.writeFile()
             logger.info(f"Sleeping for  : {polling_interval_seconds}(s)")
-            await asyncio.sleep(polling_interval_seconds)
-            #time.sleep(polling_interval_seconds)
+            time.sleep(polling_interval_seconds)
 
     def fetchData(self):
         logger.info(f"Begin Data Extraction..")
@@ -374,24 +372,20 @@ class MyServer(BaseHTTPRequestHandler):
         with open('results.json', 'r') as f:
             self.wfile.write(f.read().encode('utf-8'))
 
-
 def main():
     # Main entry point
-    # init Prom Exporter Object
+    # init exporter object
     exporter = PromExporter()
-    # start up prom http server for gauge data
+    # init json api server
+    json_server = HTTPServer(('localhost', api_port), MyServer)
+    # init threads for jobs
+    thread1 = threading.Thread(target=exporter.executeProcess)
+    thread2 = threading.Thread(target=json_server.serve_forever)
+    # kickoff
+    # start prom http service
     start_http_server(exporter_port)
-    
-    
-    async def jsonAPI():
-        HTTPServer(('localhost', api_port), MyServer).serve_forever()
-        await asyncio.sleep(1)
-
-    # async functions to kickoff jobs
-    async def run_jobs():
-        await asyncio.gather(exporter.executeProcess(), jsonAPI())
-        
-    asyncio.run(run_jobs())
+    thread1.start()
+    thread2.start()
 
 if __name__ == "__main__":
     main()

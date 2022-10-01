@@ -1,9 +1,8 @@
-import time, json, requests, os
+import time, json, requests, os, threading, asyncio
 import logging.config
 from prometheus_client import start_http_server, Gauge
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-
-ip_addy = os.environ.get("IP_ADDRESS")
 base_coin = os.environ.get("BASE_COIN")
 mining_coin = os.environ.get("MINING_COIN")
 currency = os.environ.get("CURRENCY")
@@ -17,12 +16,10 @@ electric = float(os.environ.get("ELECTRIC_COST"))
 hive_key = os.environ.get("HIVE_KEY")
 cc_key = os.environ.get("CC_KEY")
 explorer_url = os.environ.get("EXPLORER_URL")
-mining_url = os.environ.get("MINING_URL")
 decimal = int(os.environ.get("MINING_DECIMALS"))
 polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "300"))
-app_port = int(os.getenv("APP_PORT", "80"))
 exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
-
+api_port = int(os.environ.get("APP_PORT"))
 # init logger
 
 logging.basicConfig(
@@ -38,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 class PromExporter:
     def __init__(self):
+        
         """
         Prometheus Exporter Object
 
@@ -49,9 +47,6 @@ class PromExporter:
         """
         logger.info(f"Init PromExporter")
 
-        self.currency = currency
-        self.ticker = mining_coin
-        self.wallet_type = base_coin
         self.hive_headers = {"Authorization": f"Bearer {hive_key}"}
         self.decimal = int(f'1{"0" * decimal}')
         self.getGauges()
@@ -75,8 +70,8 @@ class PromExporter:
                 'worker': {}
             }
         }
-
-    def executeProcess(self):
+        
+    async def executeProcess(self):
 
         # Metrics Loop
         logger.info(f"Beginning Running Loop")
@@ -85,7 +80,8 @@ class PromExporter:
             self.setMetrics()
             self.writeFile()
             logger.info(f"Sleeping for  : {polling_interval_seconds}(s)")
-            time.sleep(polling_interval_seconds)
+            await asyncio.sleep(polling_interval_seconds)
+            #time.sleep(polling_interval_seconds)
 
     def fetchData(self):
         logger.info(f"Begin Data Extraction..")
@@ -94,23 +90,23 @@ class PromExporter:
             if key == "price":
                 logger.info(f"Hitting cryptoCompare for Price Data")
 
-                self.data[key][f"{key}_{self.wallet_type}"] = requests.get(
-                    self.priceURL(self.wallet_type, self.currency)).json()
+                self.data[key][f"{key}_{base_coin}"] = requests.get(
+                    self.priceURL(base_coin, currency)).json()
 
-                self.data[key][f"{key}_{self.ticker}"] = requests.get(
-                    self.priceURL(self.ticker, self.currency)).json()
+                self.data[key][f"{key}_{mining_coin}"] = requests.get(
+                    self.priceURL(mining_coin, currency)).json()
 
             elif key == "balance":
                 logger.info(f"Hitting Explorer for Wallet Balance Data")
 
                 self.data[key] = requests.get(f"https://{self.endpoints[key]}").json()
 
-                self.data[key].update({f"wallet_{key}_{self.wallet_type}": round(
+                self.data[key].update({f"wallet_{key}_{base_coin}": round(
                     self.data[key][wallet_address]["final_balance"] / self.decimal, 5, )})
 
-                self.data[key].update({f"wallet_{key}_{self.currency}": round(
-                    self.data[key][f"wallet_{key}_{self.wallet_type}"]
-                    * self.data["price"][f"price_{self.wallet_type}"][currency], 2,)})
+                self.data[key].update({f"wallet_{key}_{currency}": round(
+                    self.data[key][f"wallet_{key}_{base_coin}"]
+                    * self.data["price"][f"price_{base_coin}"][currency], 2,)})
 
             elif key == "hive":
                 logger.info(f"Hitting Hive for Farm Stats")
@@ -122,16 +118,16 @@ class PromExporter:
                 self.data[key]['worker'] = requests.get(
                     f"https://{self.endpoints[key]['worker']}", headers=self.hive_headers).json()
 
-                self.data[key]['farm'][f"power_cost_{self.currency}"] = round(
+                self.data[key]['farm'][f"power_cost_{currency}"] = round(
                     self.powerConversion(self.data[key]['farm']["stats"]["power_draw"]), 2)
 
                 self.data[key]['farm']["mining_profitability"] = round(
-                    self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]
-                    - self.data[key]['farm'][f"power_cost_{self.currency}"], 2,)
+                    self.data["2miners"][f"unpaid_last_24_hr_{currency}"]
+                    - self.data[key]['farm'][f"power_cost_{currency}"], 2,)
 
                 self.data[key]['farm']["mining_profitability_percent"] = round(
                     (self.data[key]['farm']["mining_profitability"]
-                     / self.data["2miners"][f"unpaid_last_24_hr_{self.currency}"]) * 100, 2,)
+                     / self.data["2miners"][f"unpaid_last_24_hr_{currency}"]) * 100, 2,)
                 
 
             elif key == "2miners":
@@ -139,19 +135,19 @@ class PromExporter:
 
                 self.data[key] = requests.get(f"https://{self.endpoints[key]}").json()
 
-                self.data[key].update({f"unpaid_balance_{self.ticker}": round(
+                self.data[key].update({f"unpaid_balance_{mining_coin}": round(
                     self.data[key]["stats"]["balance"] / self.decimal, 5)})
 
-                self.data[key].update({f"unpaid_balance_{self.currency}": round(
-                    self.data[key][f"unpaid_balance_{self.ticker}"] *
-                    self.data["price"][f"price_{self.ticker}"][currency],2,)})
+                self.data[key].update({f"unpaid_balance_{currency}": round(
+                    self.data[key][f"unpaid_balance_{mining_coin}"] *
+                    self.data["price"][f"price_{mining_coin}"][currency],2,)})
 
-                self.data[key].update({f"unpaid_last_24_hr_{self.ticker}": round(
+                self.data[key].update({f"unpaid_last_24_hr_{mining_coin}": round(
                     self.data[key]["sumrewards"][2]["reward"] / self.decimal, 5)})
 
-                self.data[key].update({f"unpaid_last_24_hr_{self.currency}": round(
-                    self.data[key][f"unpaid_last_24_hr_{self.ticker}"] *
-                    self.data["price"][f"price_{self.ticker}"][currency], 2,)})
+                self.data[key].update({f"unpaid_last_24_hr_{currency}": round(
+                    self.data[key][f"unpaid_last_24_hr_{mining_coin}"] *
+                    self.data["price"][f"price_{mining_coin}"][currency], 2,)})
 
         logger.info(f"Data Extraction Complete")
         
@@ -362,18 +358,40 @@ class PromExporter:
         logger.info("Data Write Complete")
 
 
+# Base Python HTTP Server to serve full json api
+class MyServer(BaseHTTPRequestHandler):
+    def _set_headers(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+    
+    def do_HEAD(self):
+        self._set_headers()
+    
+    # GET sends back a Hello world message
+    def do_GET(self):
+        self._set_headers()
+        with open('results.json', 'r') as f:
+            self.wfile.write(f.read().encode('utf-8'))
+
+
 def main():
     # Main entry point
-
     # init Prom Exporter Object
     exporter = PromExporter()
-
     # start up prom http server for gauge data
     start_http_server(exporter_port)
+    
+    
+    async def jsonAPI():
+        HTTPServer(('localhost', api_port), MyServer).serve_forever()
+        await asyncio.sleep(1)
 
-    # trigger process
-    exporter.executeProcess()
-
+    # async functions to kickoff jobs
+    async def run_jobs():
+        await asyncio.gather(exporter.executeProcess(), jsonAPI())
+        
+    asyncio.run(run_jobs())
 
 if __name__ == "__main__":
     main()

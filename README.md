@@ -32,6 +32,7 @@ RIG_NAME=<2miners Mining Name>
 IP_ADDRESS=<Machine IP>
 WALLET_ADDY=<For Blockchain.info>
 FARM_ID=<HiveOS Farm id>
+WORKER_ID=<HiveOS Worker id>
 ELECTRIC_COST=<cents 12=0.12>
 HIVE_KEY=<HiveOS API Key>
 CC_KEY=<CryptoCompare API key>

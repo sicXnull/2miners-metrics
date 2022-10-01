@@ -189,6 +189,9 @@ class PromExporter:
             "miner_round_shares": Gauge("miner_round_shares", "roundShares"),
             "miner_shares_stale": Gauge("miner_shares_stale", "sharesStale"),
             "miner_shares_valid": Gauge("miner_shares_valid", "sharesValid"),
+            "miner_workersOffline": Gauge("miner_workersOffline", "workersOffline"),
+            "miner_workersOnline": Gauge("miner_workersOnline", "workersOnline"),
+            "miner_workersTotal": Gauge("miner_workersTotal", "workersTotal"),
             "miner_current_balance": Gauge("miner_current_balance", "stats_balance"),
             
             f"jsonstats_price_{base_coin}": Gauge(
@@ -300,6 +303,9 @@ class PromExporter:
         self.gauges[f"miner_shares_stale"].set(two_miners["sharesStale"])
         self.gauges[f"miner_dayreward_number"].set(two_miners["24hnumreward"])
         self.gauges[f"miner_dayreward"].set(two_miners["24hreward"])
+        self.gauges[f"miner_workersOffline"].set(two_miners["workersOffline"])
+        self.gauges[f"miner_workersOnline"].set(two_miners["workersOnline"])
+        self.gauges[f"miner_workersTotal"].set(two_miners["workersTotal"])
         
         self.gauges[f"jsonstats_unpaid_balance_{mining_coin}"].set(
             self.data["2miners"][f"unpaid_balance_{mining_coin}"])

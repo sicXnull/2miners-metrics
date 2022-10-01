@@ -182,6 +182,7 @@ class PromExporter:
             'shares_total': Gauge('hiveos_shares_total', 'Shares Total'),
             'shares_ratio': Gauge('hiveos_shares_ratio', 'Shares Ratio'),
             'miner_start_time': Gauge('hiveos_miner_start_time', 'Miner Start Time'),
+            'miner_duration': Gauge('hiveos_mining_duration', 'Mining Duration'),
             'rigs_power': Gauge('hiveos_rigs_power', 'Rigs Power'),
             "accepted_share_rate": Gauge('hiveos_accepted_share_rate', 'Accepted Share Rate (ASR)'),
             "miner_dayreward_number": Gauge("miner_dayreward_number", "24hnumreward"),
@@ -285,6 +286,7 @@ class PromExporter:
         self.gauges[f"shares_total"].set(shares["total"])
         self.gauges[f"shares_ratio"].set(shares["ratio"])
         self.gauges[f"miner_start_time"].set(worker["stats"]["miner_start_time"])
+        self.gauges[f"miner_duration"].set(time.time() - worker["stats"]["miner_start_time"])
 
     def set_price(self):
         logger.info(f"Setting Price Data")

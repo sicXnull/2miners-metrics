@@ -348,11 +348,9 @@ class PromExporter:
         return f"https://min-api.cryptocompare.com/data/price?fsym={coin}&tsyms={currency}&api_key={cc_key}"
 
     def writeFile(self):
-        logger.info(f"Writing Metrics Data")
-
+        logger.info(f"Writing Results Data for JSON API")
         with open("results.json", "w") as file:
             json.dump(self.data, file, indent=4)
-
         logger.info("Data Write Complete")
 
 
@@ -377,7 +375,7 @@ def main():
     # init exporter object
     exporter = PromExporter()
     # init json api server
-    json_server = HTTPServer(('localhost', api_port), MyServer)
+    json_server = HTTPServer(('0.0.0.0', api_port), MyServer)
     # init threads for jobs
     thread1 = threading.Thread(target=exporter.executeProcess)
     thread2 = threading.Thread(target=json_server.serve_forever)
